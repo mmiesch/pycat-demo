@@ -1,6 +1,8 @@
 name: branch-protection
 run-name: ${{ github.actor }} ${{ github.event_name }} to ${{ github.ref_name }} 
-on: [push]
+on:
+  push:
+    branches: ['develop','main']
 jobs:
   check-bats-version:
     runs-on: ubuntu-latest
