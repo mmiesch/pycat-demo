@@ -1,5 +1,5 @@
 name: branch-protection
-run-name: ${{ github.actor }} action ${{ github.action }}
+run-name: ${{ github.actor }} branch ${{ github.base_ref }} event ${{ github.event_name }}
 on: [push]
 jobs:
   check-bats-version:
