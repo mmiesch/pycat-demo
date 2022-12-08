@@ -2,3 +2,4 @@ new file
 new line
 hi
 mybranch
+try ci
