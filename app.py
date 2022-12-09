@@ -1,8 +1,10 @@
 from datetime import date
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
+from skimage import data
 
 import numpy as np
+import plotly.express as px
 import dash_bootstrap_components as dbc
 
 EXPLAINER = """This is a simple demo of a DASH application that is relevant for
@@ -17,8 +19,10 @@ https://github.com/tcbegley/dash-bootstrap-css"""
 # you can read in a series of fits images into a list or numpy array here 
 # before calling the application.  Then that list is available to you.
 
-x = np.pi * np.linspace(0,2,num=100)
-y = np.sin(6*x)
+# sample image for plotting
+image = data.shepp_logan_phantom()
+
+fig = px.imshow(image)
 
 app = Dash()
 
@@ -55,16 +59,17 @@ app.layout = dbc.Container(
         ),
         dbc.Card(
             [dcc.Graph(
-                figure={
-                    "data": [
-                        {
-                            "x": x,
-                            "y": y,
-                            "type": "lines",
-                        },
-                    ],
-                    "layout": {"title": "Sample Plot"},
-                },
+                figure=fig,
+#                figure={
+#                    "data": [
+#                        {
+#                            "x": x,
+#                            "y": y,
+#                            "type": "lines",
+#                        },
+#                    ],
+#                    "layout": {"title": "Sample Plot"},
+#                },
             ),
             ],
             body=True,
