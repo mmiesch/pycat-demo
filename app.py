@@ -22,8 +22,6 @@ https://github.com/tcbegley/dash-bootstrap-css"""
 # sample image for plotting
 image = data.shepp_logan_phantom()
 
-fig = px.imshow(image)
-
 app = Dash()
 
 app.layout = dbc.Container(
@@ -59,17 +57,18 @@ app.layout = dbc.Container(
         ),
         dbc.Card(
             [dcc.Graph(
-                figure=fig,
-#                figure={
-#                    "data": [
-#                        {
-#                            "x": x,
-#                            "y": y,
-#                            "type": "lines",
-#                        },
-#                    ],
-#                    "layout": {"title": "Sample Plot"},
-#                },
+                figure={
+                    "data": [
+                        {
+                            "z": image,
+                            "type": "heatmap",
+                        },
+                    ],
+                    "layout": {
+                        "title": "Sample Image",
+                        "xaxis": {"scaleanchor":'y'}
+                    },
+                },
             ),
             ],
             body=True,
