@@ -39,19 +39,6 @@ app.layout = dbc.Container(
         ),
         dbc.Card(
             [
-                html.H4("Dropdown - multi", className="card-title"),
-                dcc.Dropdown(
-                    options=[
-                        {"label": f"Option {i}", "value": i} for i in range(10)
-                    ],
-                    multi=True,
-                ),
-            ],
-            body=True,
-            className="mb-3",
-        ),
-        dbc.Card(
-            [
                 html.H4("Slider", className="card-title"),
                 dcc.Slider(
                     min=0,
@@ -62,46 +49,6 @@ app.layout = dbc.Container(
                 ),
             ],
             body=True,
-            className="mb-3",
-        ),
-        dbc.Card(
-            [
-                html.H4("RangeSlider", className="card-title"),
-                dcc.RangeSlider(
-                    min=0,
-                    max=20,
-                    step=0.5,
-                    value=[5, 15],
-                    marks={i: {"label": str(i)} for i in range(0, 21, 4)},
-                ),
-            ],
-            body=True,
-            className="mb-3",
-        ),
-        dbc.Card(
-            dbc.CardBody(
-                [
-                    html.H4("DatePickerSingle", className="card-title"),
-                    dcc.DatePickerSingle(
-                        min_date_allowed=date(1995, 8, 5),
-                        max_date_allowed=date(2017, 9, 19),
-                        initial_visible_month=date(2017, 8, 5),
-                    ),
-                ],
-            ),
-            className="mb-3",
-        ),
-        dbc.Card(
-            dbc.CardBody(
-                [
-                    html.H4("DatePickerRange", className="card-title"),
-                    dcc.DatePickerRange(
-                        min_date_allowed=date(1995, 8, 5),
-                        max_date_allowed=date(2017, 9, 19),
-                        initial_visible_month=date(2017, 8, 5),
-                    ),
-                ]
-            ),
             className="mb-3",
         ),
     ],
