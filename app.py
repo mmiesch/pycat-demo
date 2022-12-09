@@ -36,10 +36,10 @@ app.layout = dbc.Container(
             [
                 html.H4("Slider", className="card-title"),
                 dcc.Slider(
-                    min=0,
-                    max=20,
-                    step=0.5,
-                    value=10,
+                    min=1,
+                    max=10,
+                    step=1,
+                    value=1,
                     marks={i: {"label": str(i)} for i in range(0, 21, 4)},
                 ),
             ],
