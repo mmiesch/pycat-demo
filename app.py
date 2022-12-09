@@ -1,29 +1,24 @@
 from datetime import date
-
-import dash
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
+
+import dash_bootstrap_components as dbc
 
 EXPLAINER = """This is a simple demo of a DASH application that is relevant for
 pyCAT.  It starts from a dash example and css template obtained from here:
 https://github.com/tcbegley/dash-bootstrap-css"""
 
-# note we do not add dbc.themes.BOOTSTRAP under external_stylesheets
-# the bootstrap styles are loaded from our custom stylesheet in assets
-app = dash.Dash()
+# Note: the original example from the dash-bootstrap-css repo has lots
+# of other useful examples, like a checklist, a range slider, and
+# selectors for single dates or date ranges.  Worth going back to as
+# we make this more sophisticated.
+
+app = Dash()
 
 app.layout = dbc.Container(
     [
         html.H1("Simple DASH demo"),
         dcc.Markdown(EXPLAINER),
-        dbc.Checklist(
-            options=[{"label": "Activate custom styles", "value": 1}],
-            value=[1],
-            id="toggle",
-            switch=True,
-        ),
         html.Hr(),
         dbc.Card(
             [
@@ -54,20 +49,8 @@ app.layout = dbc.Container(
     ],
     id="container",
     style={"marginBottom": "300px", "marginTop": "20px"},
-    # in most apps you won't want to toggle the className with a callback
-    # simply set the className manually here
-    # className="dash-bootstrap",
+    className="dash-bootstrap",
 )
-
-
-# this callback is use to toggle the "dash-bootstrap" class so you can see
-# the effect of the custom stylesheets when running the example app.
-@app.callback(Output("container", "className"), Input("toggle", "value"))
-def toggle_classname(value):
-    if 1 in value:
-        return "dash-bootstrap"
-    return ""
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)
