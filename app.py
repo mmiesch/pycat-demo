@@ -6,13 +6,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-EXPLAINER = """This is a simple demo of the custom stylesheets. The default
-styles in `dash-core-components` are overridden by adding one of the custom
-stylesheets to the `assets` folder, and adding the class `dash-bootstrap` to
-any parent element of the components you want to restyle. You can see the
-effect of applying the custom styles using the below toggle.
-"""
-
+EXPLAINER = """This is a simple demo of a DASH application that is relevant for
+pyCAT.  It starts from a dash example and css template obtained from here:
+https://github.com/tcbegley/dash-bootstrap-css"""
 
 # note we do not add dbc.themes.BOOTSTRAP under external_stylesheets
 # the bootstrap styles are loaded from our custom stylesheet in assets
@@ -20,7 +16,7 @@ app = dash.Dash()
 
 app.layout = dbc.Container(
     [
-        html.H1("dash-bootstrap-css example"),
+        html.H1("Simple DASH demo"),
         dcc.Markdown(EXPLAINER),
         dbc.Checklist(
             options=[{"label": "Activate custom styles", "value": 1}],
