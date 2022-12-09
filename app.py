@@ -22,7 +22,7 @@ app.layout = dbc.Container(
         html.Hr(),
         dbc.Card(
             [
-                html.H4("Dropdown", className="card-title"),
+                html.H4("Plot options", className="card-title"),
                 dcc.Dropdown(
                     options=[
                         {"label": f"Option {i}", "value": i} for i in range(10)
@@ -34,7 +34,7 @@ app.layout = dbc.Container(
         ),
         dbc.Card(
             [
-                html.H4("Slider", className="card-title"),
+                html.H4("Frame selection", className="card-title"),
                 dcc.Slider(
                     min=1,
                     max=10,
