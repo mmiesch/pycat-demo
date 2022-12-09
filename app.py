@@ -2,6 +2,7 @@ from datetime import date
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
+import numpy as np
 import dash_bootstrap_components as dbc
 
 EXPLAINER = """This is a simple demo of a DASH application that is relevant for
@@ -12,6 +13,12 @@ https://github.com/tcbegley/dash-bootstrap-css"""
 # of other useful examples, like a checklist, a range slider, and
 # selectors for single dates or date ranges.  Worth going back to as
 # we make this more sophisticated.
+
+# you can read in a series of fits images into a list or numpy array here 
+# before calling the application.  Then that list is available to you.
+
+x = np.pi * np.linspace(0,2,num=100)
+y = np.sin(6*x)
 
 app = Dash()
 
@@ -46,6 +53,23 @@ app.layout = dbc.Container(
             body=True,
             className="mb-3",
         ),
+        dbc.Card(
+            [dcc.Graph(
+                figure={
+                    "data": [
+                        {
+                            "x": x,
+                            "y": y,
+                            "type": "lines",
+                        },
+                    ],
+                    "layout": {"title": "Sample Plot"},
+                },
+            ),
+            ],
+            body=True,
+            className="mb-3",
+        )
     ],
     id="container",
     style={"marginBottom": "300px", "marginTop": "20px"},
