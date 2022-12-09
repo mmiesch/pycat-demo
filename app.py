@@ -68,6 +68,7 @@ app.layout = dbc.Container(
                         "title": "Sample Image",
                         "xaxis": {"scaleanchor":'y'},
                         "height": 800,
+                        "showlegend": False,
                     },
                 },
             ),
