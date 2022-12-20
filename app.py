@@ -21,15 +21,15 @@ https://github.com/tcbegley/dash-bootstrap-css"""
 # you can read in a series of fits images into a list or numpy array here 
 # before calling the application.  Then that list is available to you.
 
-#def matplotlib_to_plotly(cmap, pl_entries):
-#    h = 1.0/(pl_entries-1)
-#    pl_colorscale = []
-#
-#    for k in range(pl_entries):
-#        C = map(np.uint8, np.array(cmap(k*h)[:3])*255)
-#        pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
-#
-#    return pl_colorscale
+def matplotlib_to_plotly(cmap, pl_entries):
+    h = 1.0/(pl_entries-1)
+    pl_colorscale = []
+
+    for k in range(pl_entries):
+        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
+        pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
+
+    return pl_colorscale
 
 # sample image for plotting
 image = data.shepp_logan_phantom()
@@ -37,7 +37,7 @@ image = data.shepp_logan_phantom()
 #cmap = get_cmap('soholasco2')
 cmap = plt.get_cmap('stereocor2')
 
-#cscale = matplotlib_to_plotly(cmap, 255)
+cscale = matplotlib_to_plotly(cmap, 255)
 
 app = Dash()
 
@@ -81,7 +81,7 @@ app.layout = dbc.Container(
                             "type": "heatmap",
                             "showscale": False,
                             "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-                            #"color_continuous_scale": cmap
+                            "colorscale": cscale
                         },
                     ],
                     "layout": {
