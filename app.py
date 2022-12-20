@@ -62,19 +62,36 @@ app.layout = dbc.Container(
                         {
                             "z": image,
                             "type": "heatmap",
+                            "showscale": False,
+                            'hovertemplate': 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
                         },
                     ],
                     "layout": {
-                        "title": "Sample Image",
-                        "xaxis": {"scaleanchor":'y'},
+                        "xaxis": {
+                            "scaleanchor":'y',
+                            "showticklabels": False,
+                            "visible": False
+                            },
+                        "yaxis": {
+                            "showticklabels": False,
+                            "visible": False
+                            },
+                        "margin": {
+                            't': 10,
+                            'b': 10,
+                            'l': 10,
+                            'r': 10,
+                        },
                         "height": 800,
-                        "showlegend": False,
+                        "width": 800,
+                        "showlegend": False
                     },
                 },
             ),
             ],
             body=True,
             className="mb-3",
+            style={"textAlign":"center"}
         )
     ],
     id="container",
