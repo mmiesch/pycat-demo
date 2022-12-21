@@ -106,7 +106,7 @@ def update_plot(cscale):
                 "type": "heatmap",
                 "showscale": False,
                 "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-                "colorscale": cscale_lasco
+                "colorscale": scaledict[cscale]
             },
         ],
         "layout": {
