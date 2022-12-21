@@ -95,6 +95,7 @@ app.layout = dbc.Container(
             [
                 html.H4("Frame selection", className="card-title"),
                 dcc.Slider(
+                    id = "frame-chooser",
                     min=1,
                     max=10,
                     step=1,
@@ -122,13 +123,13 @@ app.layout = dbc.Container(
 
 @app.callback(
     Output("image-plot", "figure"),
-    Input("color-chooser", "value"),
+    [Input("color-chooser", "value"), Input("frame-chooser", "value")],
 )
-def update_plot(cscale):
+def update_plot(cscale, frame):
     image_plot = {
         "data": [
             {
-                "z": image,
+                "z": images[frame-1],
                 "type": "heatmap",
                 "showscale": False,
                 "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
