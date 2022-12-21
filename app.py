@@ -1,3 +1,4 @@
+from astropy.io import fits
 from datetime import date
 from dash import Dash, dcc, html, Input, Output
 from skimage import data
@@ -29,10 +30,37 @@ def matplotlib_to_plotly(cmap, pl_entries):
         pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
 
     return pl_colorscale
+#------------------------------------------------------------------------------
+# define images
+
+# arbitrary sequence of 10 STEREO L3 images
+dir = '/home/mark.miesch/Products/image_processing/ATBD/data/stereo_a/L3_2012_09'
+files = [
+    "STEREOA_L3_2012_09_16_113900.fts",
+    "STEREOA_L3_2012_09_16_115400.fts",
+    "STEREOA_L3_2012_09_16_122400.fts",
+    "STEREOA_L3_2012_09_16_123900.fts",
+    "STEREOA_L3_2012_09_16_125400.fts",
+    "STEREOA_L3_2012_09_16_132400.fts",
+    "STEREOA_L3_2012_09_16_133900.fts",
+    "STEREOA_L3_2012_09_16_135400.fts",
+    "STEREOA_L3_2012_09_16_142400.fts",
+    "STEREOA_L3_2012_09_16_143900.fts"
+]
+
+images = []
+for f in files:
+    fname = dir + '/' + f
+    hdu = fits.open(fname)[0]
+    images.append(hdu.data)
 
 # sample image for plotting
-image = data.shepp_logan_phantom()
+#image = data.shepp_logan_phantom()
 
+image = images[0]
+
+#------------------------------------------------------------------------------
+# define color scales
 cmap_lasco = plt.get_cmap('soholasco2')
 cmap_stereo = plt.get_cmap('stereocor2')
 
@@ -57,7 +85,7 @@ app.layout = dbc.Container(
                 dcc.Dropdown(
                     id = "color-chooser",
                     options=names,
-                    value = "STEREO/COR2"
+                    value = "LASCO/C2"
                 ),
             ],
             body=True,
