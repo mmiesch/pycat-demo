@@ -97,12 +97,10 @@ app.layout = dbc.Container(
     Input("color-chooser", "value"),
 )
 def update_plot(cscale):
-    image2 = data.shepp_logan_phantom()
-
     image_plot = {
         "data": [
             {
-                "z": image2,
+                "z": image,
                 "type": "heatmap",
                 "showscale": False,
                 "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
@@ -110,7 +108,6 @@ def update_plot(cscale):
             },
         ],
         "layout": {
-            "title": {"text": cscale},
             "xaxis": {
                 "scaleanchor":'y',
                 "showticklabels": False,
