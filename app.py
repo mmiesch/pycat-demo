@@ -1,6 +1,5 @@
 from datetime import date
-from dash import Dash, dcc, html
-from dash.dependencies import Input, Output
+from dash import Dash, dcc, html, Input, Output
 from skimage import data
 
 import numpy as np
@@ -34,10 +33,16 @@ def matplotlib_to_plotly(cmap, pl_entries):
 # sample image for plotting
 image = data.shepp_logan_phantom()
 
-#cmap = get_cmap('soholasco2')
-cmap = plt.get_cmap('stereocor2')
+cmap_lasco = plt.get_cmap('soholasco2')
+cmap_stereo = plt.get_cmap('stereocor2')
 
-cscale = matplotlib_to_plotly(cmap, 255)
+cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
+cscale_stereo = matplotlib_to_plotly(cmap_stereo, 255)
+
+names = ["LASCO/C2","STEREO/COR2"]
+
+scaledict = {names[0]: cscale_lasco,
+             names[1]: cscale_stereo}
 
 app = Dash()
 
@@ -48,11 +53,11 @@ app.layout = dbc.Container(
         html.Hr(),
         dbc.Card(
             [
-                html.H4("Plot options", className="card-title"),
+                html.H4("Color Table", className="card-title"),
                 dcc.Dropdown(
-                    options=[
-                        {"label": f"Option {i}", "value": i} for i in range(10)
-                    ]
+                    id = "color-chooser",
+                    options=names,
+                    value = "STEREO/COR2"
                 ),
             ],
             body=True,
@@ -74,38 +79,8 @@ app.layout = dbc.Container(
         ),
         dbc.Card(
             [dcc.Graph(
-                figure={
-                    "data": [
-                        {
-                            "z": image,
-                            "type": "heatmap",
-                            "showscale": False,
-                            "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-                            "colorscale": cscale
-                        },
-                    ],
-                    "layout": {
-                        "xaxis": {
-                            "scaleanchor":'y',
-                            "showticklabels": False,
-                            "visible": False
-                            },
-                        "yaxis": {
-                            "showticklabels": False,
-                            "visible": False
-                            },
-                        "margin": {
-                            't': 10,
-                            'b': 10,
-                            'l': 10,
-                            'r': 10,
-                        },
-                        "height": 800,
-                        "showlegend": False,
-                        "paper_bgcolor": "black",
-                        "plot_bgcolor": "black",
-                    },
-                },
+                id = "image-plot",
+                config={"displayModeBar": False}
             ),
             ],
             body=True,
@@ -116,6 +91,48 @@ app.layout = dbc.Container(
     style={"marginBottom": "300px", "marginTop": "20px"},
     className="dash-bootstrap",
 )
+
+@app.callback(
+    Output("image-plot", "figure"),
+    Input("color-chooser", "value"),
+)
+def update_plot(cscale):
+    image2 = data.shepp_logan_phantom()
+
+    image_plot = {
+        "data": [
+            {
+                "z": image2,
+                "type": "heatmap",
+                "showscale": False,
+                "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+                "colorscale": cscale_lasco
+            },
+        ],
+        "layout": {
+            "title": {"text": cscale},
+            "xaxis": {
+                "scaleanchor":'y',
+                "showticklabels": False,
+                "visible": False
+                },
+            "yaxis": {
+                "showticklabels": False,
+                "visible": False
+                },
+            "margin": {
+                't': 10,
+                'b': 10,
+                'l': 10,
+                'r': 10,
+            },
+            "height": 800,
+            "showlegend": False,
+            "paper_bgcolor": "black",
+            "plot_bgcolor": "black",
+        },
+    }
+    return image_plot
 
 if __name__ == "__main__":
     app.run_server(debug=True)
