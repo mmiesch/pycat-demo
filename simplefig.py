@@ -77,7 +77,6 @@ scaledict = {names[0]: cscale_lasco,
 #for s in cscale_lasco:
 #    print(s)
 
-
 #--------------------------------------------------
 # convert to rgb
 
@@ -103,34 +102,39 @@ for k in np.arange(rgb.shape[0]):
 # plot figure
 fig = px.imshow(rgb, animation_frame=0,
                 binary_string = True,
-                labels=dict(animation_frame="frame"),
-#                color_continuous_scale=cscale_lasco,
+                labels={"animation_frame":"frame"},
                 height=800
                 )
 
-#fig.update_traces({
-#    data: {
+fig.update_traces({
 #    "showscale": False
-#    }
-#})
+      "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+})
 
-#fig.update_layout({
-#    "xaxis": {
-#        "scaleanchor":"y",
-#        "showticklabels": False,
-#        "visible": False,
-#    },
-#    "yaxis": {
-#        "visible": False
-#    },
+fig.update_layout({
+    "xaxis": {
+        "scaleanchor":"y",
+        "showticklabels": False,
+        "visible": False,
+    },
+    "yaxis": {
+        "visible": False
+    },
+    "font": {
+        "size":30,
+        "color":"goldenrod",
+        "family": "Arial Black"
+        },
+    "paper_bgcolor": "black",
+# this seems to mess up the animation
 #    "margin": {
 #        't': 10,
 #        'b': 10,
 #        'l': 10,
 #        'r': 10
 #    },
-#    "showlegend": False,
-#})
+    "showlegend": False,
+})
 
 #fig.update_traces(colorscale=cscale_lasco)
 

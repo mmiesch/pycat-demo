@@ -77,9 +77,7 @@ fig = px.imshow(images, animation_frame=0,
                 )
 
 fig.update_traces({
-    data: {
-    "showscale": False
-    }
+    "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
 })
 
 fig.update_layout({
@@ -91,14 +89,22 @@ fig.update_layout({
     "yaxis": {
         "visible": False
     },
-    "margin": {
-        't': 10,
-        'b': 10,
-        'l': 10,
-        'r': 10
-    },
+# this seems to mess up the animation
+#    "margin": {
+#        't': 10,
+#        'b': 10,
+#        'l': 10,
+#        'r': 10
+#    },
     "height": 800,
     "showlegend": False,
+    "font": {
+        "size":30,
+        "color":"goldenrod",
+        "family": "Arial Black"
+        },
+    "paper_bgcolor": "black",
+    "plot_bgcolor": "black",
 })
 
 #fig.update_traces(colorscale=cscale_lasco)
