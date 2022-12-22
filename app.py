@@ -48,16 +48,16 @@ files = [
     "STEREOA_L3_2012_09_16_143900.fts"
 ]
 
-images = []
+imagelist = []
 for f in files:
     fname = dir + '/' + f
     hdu = fits.open(fname)[0]
-    images.append(hdu.data)
+    imagelist.append(hdu.data)
 
-# sample image for plotting
-#image = data.shepp_logan_phantom()
+images = np.array(imagelist)
 
-image = images[0]
+print(type(images))
+print(images.shape)
 
 #------------------------------------------------------------------------------
 # define color scales
@@ -92,21 +92,6 @@ app.layout = dbc.Container(
             className="mb-3",
         ),
         dbc.Card(
-            [
-                html.H4("Frame selection", className="card-title"),
-                dcc.Slider(
-                    id = "frame-chooser",
-                    min=1,
-                    max=10,
-                    step=1,
-                    value=1,
-                    marks={i: {"label": str(i)} for i in range(0, 21, 4)},
-                ),
-            ],
-            body=True,
-            className="mb-3",
-        ),
-        dbc.Card(
             [dcc.Graph(
                 id = "image-plot",
                 config={"displayModeBar": False}
@@ -123,14 +108,17 @@ app.layout = dbc.Container(
 
 @app.callback(
     Output("image-plot", "figure"),
-    [Input("color-chooser", "value"), Input("frame-chooser", "value")],
+    [Input("color-chooser", "value")],
 )
-def update_plot(cscale, frame):
+def update_plot(cscale):
     image_plot = {
         "data": [
             {
-                "z": images[frame-1],
+                "z": images,
                 "type": "heatmap",
+                "animation_frame": 0,
+#                "binary_string": True,
+#                "labels": dict(animation_frame="slice"),
                 "showscale": False,
                 "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
                 "colorscale": scaledict[cscale]
