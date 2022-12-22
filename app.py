@@ -56,9 +56,6 @@ for f in files:
 
 images = np.array(imagelist)
 
-print(type(images))
-print(images.shape)
-
 #------------------------------------------------------------------------------
 # define color scales
 cmap_lasco = plt.get_cmap('soholasco2')
@@ -71,6 +68,40 @@ names = ["LASCO/C2","STEREO/COR2"]
 
 scaledict = {names[0]: cscale_lasco,
              names[1]: cscale_stereo}
+
+#------------------------------------------------------------------------------
+# plot figure
+fig = px.imshow(images, animation_frame=0,
+                labels=dict(animation_frame="frame"),
+                color_continuous_scale=cscale_lasco
+                )
+
+fig.update_traces({
+    data: {
+    "showscale": False
+    }
+})
+
+fig.update_layout({
+    "xaxis": {
+        "scaleanchor":"y",
+        "showticklabels": False,
+        "visible": False,
+    },
+    "yaxis": {
+        "visible": False
+    },
+    "margin": {
+        't': 10,
+        'b': 10,
+        'l': 10,
+        'r': 10
+    },
+    "height": 800,
+    "showlegend": False,
+})
+
+#fig.update_traces(colorscale=cscale_lasco)
 
 app = Dash()
 
@@ -94,7 +125,8 @@ app.layout = dbc.Container(
         dbc.Card(
             [dcc.Graph(
                 id = "image-plot",
-                config={"displayModeBar": False}
+                figure = fig,
+                config={"displayModeBar": False},
             ),
             ],
             body=True,
@@ -106,47 +138,47 @@ app.layout = dbc.Container(
     className="dash-bootstrap",
 )
 
-@app.callback(
-    Output("image-plot", "figure"),
-    [Input("color-chooser", "value")],
-)
-def update_plot(cscale):
-    image_plot = {
-        "data": [
-            {
-                "z": images,
-                "type": "heatmap",
-                "animation_frame": 0,
-#                "binary_string": True,
-#                "labels": dict(animation_frame="slice"),
-                "showscale": False,
-                "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-                "colorscale": scaledict[cscale]
-            },
-        ],
-        "layout": {
-            "xaxis": {
-                "scaleanchor":'y',
-                "showticklabels": False,
-                "visible": False
-                },
-            "yaxis": {
-                "showticklabels": False,
-                "visible": False
-                },
-            "margin": {
-                't': 10,
-                'b': 10,
-                'l': 10,
-                'r': 10,
-            },
-            "height": 800,
-            "showlegend": False,
-            "paper_bgcolor": "black",
-            "plot_bgcolor": "black",
-        },
-    }
-    return image_plot
+#@app.callback(
+#    Output("image-plot", "figure"),
+#    [Input("color-chooser", "value")],
+#)
+#def update_plot(cscale):
+#    image_plot = {
+#        "data": [
+#            {
+#                "z": images,
+#                "type": "heatmap",
+#                "animation_frame": 0,
+##                "binary_string": True,
+##                "labels": dict(animation_frame="slice"),
+#                "showscale": False,
+#                "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+#                "colorscale": scaledict[cscale]
+#            },
+#        ],
+#        "layout": {
+#            "xaxis": {
+#                "scaleanchor":'y',
+#                "showticklabels": False,
+#                "visible": False
+#                },
+#            "yaxis": {
+#                "showticklabels": False,
+#                "visible": False
+#                },
+#            "margin": {
+#                't': 10,
+#                'b': 10,
+#                'l': 10,
+#                'r': 10,
+#            },
+#            "height": 800,
+#            "showlegend": False,
+#            "paper_bgcolor": "black",
+#            "plot_bgcolor": "black",
+#        },
+#    }
+#    return image_plot
 
 if __name__ == "__main__":
     app.run_server(debug=True)
