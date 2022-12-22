@@ -164,10 +164,12 @@ app.layout = dbc.Container(
     [Input("color-chooser", "value")],
 )
 def update_plot(cscale):
-    newfig = fig.update_layout({
+    for f in fig.frames:
+        f.layout.coloraxis.colorscale = scaledict[cscale] 
+    fig.update_layout({
         "coloraxis": {'colorscale': scaledict[cscale]},
     })
-    return newfig
+    return fig
 
 if __name__ == "__main__":
     app.run_server(debug=True)
