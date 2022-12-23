@@ -63,6 +63,8 @@ vmin = np.min(images)
 vmax = np.max(images)
 norm = 255.0/(vmax-vmin)
 
+print(f"range {vmin} {vmax}")
+
 scaled_images = (norm*(images-vmin)).astype(np.uint8)
 
 #------------------------------------------------------------------------------
@@ -94,6 +96,8 @@ fig.update_traces({
 )
 
 fig.data[0].showscale = False
+for f in fig.frames:
+    f.data[0].showscale = False
 
 fig.update_layout({
     "coloraxis": {'colorscale': cscale_lasco},
@@ -105,13 +109,6 @@ fig.update_layout({
     "yaxis": {
         "visible": False
     },
-# this seems to mess up the animation
-#    "margin": {
-#        't': 10,
-#        'b': 10,
-#        'l': 10,
-#        'r': 10
-#    },
     "height": 800,
     "showlegend": False,
     "font": {
@@ -121,7 +118,37 @@ fig.update_layout({
         },
     "paper_bgcolor": "black",
     "plot_bgcolor": "black",
+    "transition": {'duration': 1000}
 })
+
+fig.update_layout(transition = {'duration': 1000})
+
+# I think this is the frame rate in ms
+fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
+
+# This is the transition between frames - not sure why it is different
+fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
+
+# trying to see if this makes it faster in case it is trying to do a linear 
+# interpolation - doesn't seem to matter
+#fig.layout.updatemenus[0].buttons[0].args[1]['transition']['easing'] = None
+
+#fig.layout.updatemenus[0].buttons[0].args[1]['direction'] = 'reverse'
+
+#print(fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'])
+
+reverse_button = {
+    'args': [None, {'frame': {'duration': 0, 'redraw': True}, 'mode': 'immediate',
+             'fromcurrent': True, 'direction': 'reverse',
+             'transition': {'duration': 0, 'easing': 'linear'}}],
+    'label': '&#9664;',
+    'method': 'animate'
+}
+fig.layout.updatemenus[0].buttons = (
+    fig.layout.updatemenus[0].buttons[0],
+    reverse_button,
+    fig.layout.updatemenus[0].buttons[1],
+    )
 
 print(fig)
 
