@@ -121,7 +121,7 @@ fig.update_layout({
     "transition": {'duration': 1000}
 })
 
-fig.update_layout(transition = {'duration': 1000})
+fig.update_layout(transition = {'duration': 0})
 
 # I think this is the frame rate in ms
 fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
@@ -192,7 +192,8 @@ app.layout = dbc.Container(
 )
 def update_plot(cscale):
     for f in fig.frames:
-        f.layout.coloraxis.colorscale = scaledict[cscale] 
+        f.layout.coloraxis.colorscale = scaledict[cscale]
+        f.data[0].showscale = False 
     fig.update_layout({
         "coloraxis": {'colorscale': scaledict[cscale]},
     })
