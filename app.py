@@ -1,7 +1,5 @@
 from astropy.io import fits
-from datetime import date
 from dash import Dash, dcc, html, Input, Output
-from skimage import data
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -150,7 +148,7 @@ fig.layout.updatemenus[0].buttons = (
     fig.layout.updatemenus[0].buttons[1],
     )
 
-print(fig)
+#print(fig)
 
 app = Dash()
 
