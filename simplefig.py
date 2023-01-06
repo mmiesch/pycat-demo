@@ -107,9 +107,11 @@ fig = px.imshow(rgb, animation_frame=0,
                 )
 
 fig.update_traces({
-#    "showscale": False
+      "showscale": False,
       "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-})
+    },
+    selector = {'type':'heatmap'}
+)
 
 fig.update_layout({
     "xaxis": {

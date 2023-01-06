@@ -34,7 +34,7 @@ def matplotlib_to_plotly(cmap, pl_entries):
 # define images
 
 # arbitrary sequence of 10 STEREO L3 images
-dir = '/home/mark.miesch/Products/image_processing/ATBD/data/stereo_a/L3_2012_09'
+dir = './data'
 files = [
     "STEREOA_L3_2012_09_16_113900.fts",
     "STEREOA_L3_2012_09_16_115400.fts",
@@ -89,8 +89,8 @@ fig = px.imshow(scaled_images, animation_frame=0,
                 )
 
 fig.update_traces({
+    "showscale": False,
     "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-    "showscale": False
     },
     selector = {'type':'heatmap'}
 )
