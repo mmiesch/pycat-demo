@@ -1,6 +1,0 @@
-new file
-new line
-hi
-mybranch
-try ci
-ci again
