@@ -1,7 +1,7 @@
 from astropy.io import fits
 from datetime import date
 from dash import Dash, dcc, html, Input, Output
-from skimage import data
+#from skimage import data
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -137,6 +137,11 @@ fig.update_layout({
 #    },
     "showlegend": False,
 })
+
+fig.update_layout(transition = {'duration': 0})
+
+fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
+fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
 
 #fig.update_traces(colorscale=cscale_lasco)
 
