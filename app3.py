@@ -22,6 +22,12 @@ colors = {
     'text': '#7FDBFF'
 }
 
+#------------------------------------------------------------------------------
+# define color scales
+names = ["LASCO/C2","STEREO/COR2"]
+
+#------------------------------------------------------------------------------
+
 app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
     html.H1(
         children='Example dashboard',
@@ -33,7 +39,14 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 
     html.Div(
         id='div-test',
-        children='subtitle, i guess',
+        children=[
+            'Select color scale',
+            dcc.Dropdown(
+                id = "color-chooser",
+                options = names,
+                value = "LASCO/C2"
+            )
+        ],
         style={
             'textAlign': 'center',
             'color': colors['text']
