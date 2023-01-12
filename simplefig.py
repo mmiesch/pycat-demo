@@ -145,6 +145,20 @@ fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
 
 #fig.update_traces(colorscale=cscale_lasco)
 
+reverse_button = {
+    'args': [None, {'frame': {'duration': 0, 'redraw': True}, 'mode': 'immediate',
+             'fromcurrent': True, 'direction': 'reverse',
+             'transition': {'duration': 0, 'easing': 'linear'}}],
+    'label': '&#9664;',
+    'method': 'animate'
+}
+
+fig.layout.updatemenus[0].buttons = (
+    fig.layout.updatemenus[0].buttons[0],
+    reverse_button,
+    fig.layout.updatemenus[0].buttons[1],
+    )
+
 app = Dash()
 
 app.layout = dbc.Container(
