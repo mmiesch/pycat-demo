@@ -23,8 +23,10 @@ colors = {
 }
 
 #------------------------------------------------------------------------------
-# define color scales
-names = ["LASCO/C2","STEREO/COR2"]
+# define min/max for gamma correction
+
+vmin = np.min(buffer)
+vmax = np.max(buffer)
 
 #------------------------------------------------------------------------------
 
@@ -40,11 +42,12 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     html.Div(
         id='div-test',
         children=[
-            'Select color scale',
-            dcc.Dropdown(
+            'Gamma Correction',
+            dcc.Slider(
                 id = "color-chooser",
-                options = names,
-                value = "LASCO/C2"
+                min = 0.0,
+                max = 5.0,
+                value = 1.0
             )
         ],
         style={
@@ -86,13 +89,11 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 def reset_counter(n_intervals):
     return 0
 
-# I also added the below reset to make sure the data didnt get out of bounds.
-#@app.callback(Output('buffer', 'data'),
-#              Output('client-interval', 'n_intervals'),
-#              Input('server-interval', 'n_intervals'))
-#def update_data(n_intervals):
-#    data = np.random.random(size=(buffersize, figsize, figsize))
-#    return data, 0
+@app.callback(Output('buffer', 'data'),
+              Input('color-chooser', 'value'))
+def update_color_table(cmap):
+    data = np.random.random(size=(buffersize, figsize, figsize))
+    return data
 
 # and finally we use the buffer to update the plot at a higher frequency.
 # this is what I'd like to turn into a clientside callback. it works for now, but
