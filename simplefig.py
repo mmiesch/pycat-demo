@@ -145,4 +145,29 @@ fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
 
 #fig.update_traces(colorscale=cscale_lasco)
 
-fig.show()
+app = Dash()
+
+app.layout = dbc.Container(
+    [
+        html.H1("Simple DASH demo"),
+        dcc.Markdown(EXPLAINER),
+        html.Hr(),
+        dbc.Card(
+            [dcc.Graph(
+                figure = fig,
+                id = "image-plot",
+                config={"displayModeBar": False},
+            ),
+            ],
+            body=True,
+            className="mb-3"
+        )
+    ],
+    id="container",
+    style={"marginBottom": "300px", "marginTop": "20px"},
+    className="dash-bootstrap",
+)
+
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
