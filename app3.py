@@ -136,14 +136,14 @@ def update_figure_data(gamma):
                 binary_string = True,
                 labels={"animation_frame":"frame"},
                 height=800,
-#                zmin=0, zmax=255
+                zmin=0, zmax=255
                 )
-#    fig.update_traces({
-#        #"showscale": False,
-#        "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-#        },
-#        selector = {'type':'heatmap'}
-#    )
+    fig.update_traces({
+        "showscale": False,
+        "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+        },
+        selector = {'type':'heatmap'}
+    )
 
 #    fig.data[0].showscale = False
 #    fig.data[0].showlegend = False
@@ -170,9 +170,6 @@ def update_figure_data(gamma):
         "paper_bgcolor": "black",
         "plot_bgcolor": "black",
     })
-
-#    for f in fig.frames:
-#        f.data[0].showscale = False
 
     return fig
 
