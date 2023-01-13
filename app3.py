@@ -129,12 +129,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
               Input('gamma-correction', 'value'))
 def update_figure_data(gamma):
     data = (254*(norm*(images - vmin))**gamma).astype(np.uint8)
-    for k in np.arange(data.shape[0]):
-        for i in np.arange(data.shape[1]):
-          for j in np.arange(data.shape[2]):
-            rgb[k,i,j,0] = rgb_lasco[data[k,i,j],0]
-            rgb[k,i,j,1] = rgb_lasco[data[k,i,j],1]
-            rgb[k,i,j,2] = rgb_lasco[data[k,i,j],2]
+    for idx, val in np.ndenumerate(data):
+        rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[val,:]
 
     fig = px.imshow(rgb, animation_frame=0,
                 binary_string = True,
