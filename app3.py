@@ -10,7 +10,21 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
+import matplotlib.pyplot as plt
+import sunpy.visualization.colormaps as cm
 
+#------------------------------------------------------------------------------
+def matplotlib_to_plotly(cmap, pl_entries):
+    h = 1.0/(pl_entries-1)
+    pl_colorscale = []
+
+    for k in range(pl_entries):
+        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
+        pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
+
+    return pl_colorscale
+
+#------------------------------------------------------------------------------
 app = Dash(__name__)
 
 #------------------------------------------------------------------------------
@@ -51,11 +65,19 @@ buffer = (norm*(images - vmin)).astype(np.uint8)
 buffersize = buffer.shape[0]
 
 #------------------------------------------------------------------------------
+# lasco/C2 color scale
+
+cmap_lasco = plt.get_cmap('soholasco2')
+
+cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
+
+#------------------------------------------------------------------------------
 # generate figure
 
-fig = px.imshow(buffer[0])
+fig = px.imshow(buffer[0], zmin=0, zmax=255)
 
 fig.update_layout({
+    "coloraxis": {'colorscale': cscale_lasco},
     "xaxis": {
         "scaleanchor":"y",
         "showticklabels": False,
