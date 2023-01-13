@@ -60,47 +60,12 @@ vmax = np.max(images)
 
 norm = 255.0/(vmax-vmin)
 
-buffer = (norm*(images - vmin)).astype(np.uint8)
-
-buffersize = buffer.shape[0]
-
 #------------------------------------------------------------------------------
 # lasco/C2 color scale
 
 cmap_lasco = plt.get_cmap('soholasco2')
 
 cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
-
-#------------------------------------------------------------------------------
-# generate figure
-
-fig = px.imshow(buffer[0], zmin=0, zmax=255)
-
-fig.update_traces({
-    "showscale": False,
-    "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-    },
-    selector = {'type':'heatmap'}
-)
-
-fig.data[0].showscale = False
-fig.data[0].showlegend = False
-
-fig.update_layout({
-    "coloraxis": {'colorscale': cscale_lasco},
-    "xaxis": {
-        "scaleanchor":"y",
-        "showticklabels": False,
-        "visible": False,
-    },
-    "yaxis": {
-        "visible": False
-    },
-    "showlegend": False,
-    "height": 800,
-    "paper_bgcolor": "black",
-    "plot_bgcolor": "black",
-})
 
 #------------------------------------------------------------------------------
 
@@ -158,6 +123,31 @@ def update_figure_data(gamma):
                 labels={"animation_frame":"frame"},
                 height=800
                 )
+#    fig.update_traces({
+#        #"showscale": False,
+#        "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+#        },
+#        selector = {'type':'heatmap'}
+#    )
+
+#    fig.data[0].showscale = False
+#    fig.data[0].showlegend = False
+
+    fig.update_layout({
+        "coloraxis": {'colorscale': cscale_lasco},
+        "xaxis": {
+            "scaleanchor":"y",
+            "showticklabels": False,
+            "visible": False,
+        },
+        "yaxis": {
+            "visible": False
+        },
+        "showlegend": False,
+        "height": 800,
+        "paper_bgcolor": "black",
+        "plot_bgcolor": "black",
+    })
     return fig
 
 # regenerate display when the figure store changes
