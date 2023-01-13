@@ -15,15 +15,16 @@ import matplotlib.pyplot as plt
 import sunpy.visualization.colormaps as cm
 
 #------------------------------------------------------------------------------
-def matplotlib_to_plotly(cmap, pl_entries):
-    h = 1.0/(pl_entries-1)
-    pl_colorscale = []
+def matplotlib_to_rgb(cmap, ncolors):
+    h = 1.0/(ncolors-2)
 
-    for k in range(pl_entries):
+    rgbmap = np.zeros((ncolors,3), dtype=np.uint8)
+
+    for k in range(ncolors):
         C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
-        pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
+        rgbmap[k,:] = (C[0], C[1], C[2])
 
-    return pl_colorscale
+    return rgbmap
 
 #------------------------------------------------------------------------------
 app = Dash(__name__)
@@ -65,7 +66,11 @@ norm = 1.0/(vmax-vmin)
 # lasco/C2 color scale
 
 cmap_lasco = plt.get_cmap('soholasco2')
-cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
+rgb_lasco = matplotlib_to_rgb(cmap_lasco, 255)
+
+# buffer for storing
+rgb = np.zeros((images.shape[0],images.shape[1],images.shape[2],3),
+                dtype=np.uint8)
 
 #------------------------------------------------------------------------------
 
@@ -123,12 +128,19 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 @app.callback(Output('figure-store', 'data'),
               Input('gamma-correction', 'value'))
 def update_figure_data(gamma):
-    data = (255*(norm*(images - vmin))**gamma).astype(np.uint8)
-    fig = px.imshow(data, animation_frame=0,
+    data = (254*(norm*(images - vmin))**gamma).astype(np.uint8)
+    for k in np.arange(data.shape[0]):
+        for i in np.arange(data.shape[1]):
+          for j in np.arange(data.shape[2]):
+            rgb[k,i,j,0] = rgb_lasco[data[k,i,j],0]
+            rgb[k,i,j,1] = rgb_lasco[data[k,i,j],1]
+            rgb[k,i,j,2] = rgb_lasco[data[k,i,j],2]
+
+    fig = px.imshow(rgb, animation_frame=0,
                 binary_string = True,
                 labels={"animation_frame":"frame"},
                 height=800,
-                zmin=0, zmax=255
+#                zmin=0, zmax=255
                 )
 #    fig.update_traces({
 #        #"showscale": False,
@@ -149,7 +161,6 @@ def update_figure_data(gamma):
     fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
 
     fig.update_layout({
-        "coloraxis": {'colorscale': cscale_lasco},
         "xaxis": {
             "scaleanchor":"y",
             "showticklabels": False,
@@ -164,8 +175,7 @@ def update_figure_data(gamma):
         "plot_bgcolor": "black",
     })
 
-    for f in fig.frames:
-        f.layout.coloraxis.colorscale = cscale_lasco
+#    for f in fig.frames:
 #        f.data[0].showscale = False
 
     return fig
