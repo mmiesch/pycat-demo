@@ -59,7 +59,7 @@ images = np.array(imagelist)
 vmin = np.min(images)
 vmax = np.max(images)
 
-norm = 255.0/(vmax-vmin)
+norm = 1.0/(vmax-vmin)
 
 #------------------------------------------------------------------------------
 # lasco/C2 color scale
@@ -123,7 +123,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 @app.callback(Output('figure-store', 'data'),
               Input('gamma-correction', 'value'))
 def update_figure_data(gamma):
-    data = ((norm*(images - vmin))**gamma).astype(np.uint8)
+    data = (255*(norm*(images - vmin))**gamma).astype(np.uint8)
     fig = px.imshow(data, animation_frame=0,
                 binary_string = True,
                 labels={"animation_frame":"frame"},
