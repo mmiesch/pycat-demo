@@ -124,11 +124,12 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 @app.callback(Output('figure-store', 'data'),
               Input('gamma-correction', 'value'))
 def update_figure_data(gamma):
-    data = (norm*(images - vmin)**gamma).astype(np.uint8)
+    data = ((norm*(images - vmin))**gamma).astype(np.uint8)
     fig = px.imshow(data, animation_frame=0,
                 binary_string = True,
                 labels={"animation_frame":"frame"},
-                height=800
+                height=800,
+#                zmin=0, zmax=255
                 )
 #    fig.update_traces({
 #        #"showscale": False,
@@ -139,6 +140,10 @@ def update_figure_data(gamma):
 
 #    fig.data[0].showscale = False
 #    fig.data[0].showlegend = False
+
+#    fig.layout.template.data.heatmap[0].colorscale = cscale_lasco
+#    fig.layout.heatmapgl[0].colorscale = cscale_lasco
+#    fig.layout.coloraxis.colorscale = cscale_lasco
 
     fig.update_layout({
         "coloraxis": {'colorscale': cscale_lasco},
@@ -177,7 +182,10 @@ app.clientside_callback(
     Input('figure-store', 'data')
 )
 def generated_px_figure_json(data):
-    return '```\n'+json.dumps(data, indent=2)+'\n```'
+#    return '```\n'+json.dumps(data, indent=2)+'\n```'
+    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["layout"]["template"]["data"], indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["layout"]["template"]["data"]["heatmap"][0], indent=2)+'\n```'
 
 
 app.run()
