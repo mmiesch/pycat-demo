@@ -76,6 +76,15 @@ cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
 
 fig = px.imshow(buffer[0], zmin=0, zmax=255)
 
+fig.update_traces({
+    "showscale": False,
+    "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+    },
+    selector = {'type':'heatmap'}
+)
+
+fig.data[0].showscale = False
+
 fig.update_layout({
     "coloraxis": {'colorscale': cscale_lasco},
     "xaxis": {
@@ -86,7 +95,10 @@ fig.update_layout({
     "yaxis": {
         "visible": False
     },
+    "showlegend": False,
     "height": 800,
+    "paper_bgcolor": "black",
+    "plot_bgcolor": "black",
 })
 
 #------------------------------------------------------------------------------
@@ -100,7 +112,7 @@ colors = {
 
 app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
     html.H1(
-        children='Example dashboard',
+        children='Simple DASH Demo',
         style={
             'textAlign': 'center',
             'color': colors['text']
@@ -116,26 +128,20 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                 min = 0.0,
                 max = 5.0,
                 value = 1.0
-            )
+            ),
+            'Frame selection',
+            dcc.Slider(
+                id = "frame-selection",
+                min = 0,
+                max = buffersize-1,
+                step = 1,
+                value = 0
+            ),
         ],
         style={
             'textAlign': 'center',
             'color': colors['text']
         }
-    ),
-
-    # trigger data updates
-    dcc.Interval(
-        id='server-interval',
-        interval=10000,
-        n_intervals=0
-    ),
-
-    # trigger plot updates
-    dcc.Interval(
-        id='client-interval',
-        interval=1000,
-        n_intervals=0
     ),
 
     # we'll store the plot data here from the server side
@@ -150,12 +156,6 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         figure=fig
     )
 ])
-
-# reset client n_intervals every second
-@app.callback(Output('client-interval', 'n_intervals'),
-              Input('server-interval', 'n_intervals'))
-def reset_counter(n_intervals):
-    return 0
 
 @app.callback(Output('buffer', 'data'),
               Input('gamma-correction', 'value'))
@@ -173,13 +173,12 @@ app.clientside_callback(
         return newFig
     }""",
     Output('example-graph', 'figure'),
-    Input('client-interval', 'n_intervals'),
+    Input('frame-selection', 'value'),
     State('buffer', 'data'),
     State('example-graph', 'figure')
 )
-def update_figure(n_intervals, data, figure):
-    i = random.randint(0, buffersize-1)
-    figure['data'][0]['z'] = data[i]
+def update_figure(frame, data, figure):
+    figure['data'][0]['z'] = data[frame]
     return figure
 
 app.run()
