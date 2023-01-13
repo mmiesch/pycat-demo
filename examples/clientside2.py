@@ -90,10 +90,13 @@ app.clientside_callback(
     State('buffer', 'data'),
     State('example-graph', 'figure')
 )
-def update_figure(n_intervals, data, figure):
-    i = random.randint(0, buffersize-1)
-    figure['data'][0]['z'] = data[i]
-    return figure
+
+# This is in the original example but I don't think
+# it does anything
+#def update_figure(n_intervals, data, figure):
+#    i = random.randint(0, buffersize-1)
+#    figure['data'][0]['z'] = data[i]
+#    return figure
 
 
 

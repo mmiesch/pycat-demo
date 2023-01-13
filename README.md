@@ -41,10 +41,10 @@ Note: Users outside of NOAA may have to request access to this folder.
 Step 4: Run the application
 ---------------------------
 
-To run the application, enter:
+To run the application, enter, e.g. (this is for app3.py - execute the other numbered apps in a similar way):
 
 ```bash
-python app.py
+python app3.py
 ```
 
 If it's running correctly, you should see a message that reads something like this:

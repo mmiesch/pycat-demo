@@ -1,6 +1,5 @@
 """
-This builds off of the example in ex_clientside.py
-It's perhaps the most promising approach so far
+This builds off of app3.py but it's an attempt to store the plot data in a buffer and only modify the data component of the figure, fig.frames[0].data[:].z), instead of redrawing the entire figure each time.  Currently I only know how to go about this with binary_string=False.  But even then it does not seem to be working.
 """
 
 import random
@@ -69,9 +68,55 @@ norm = 1.0/(vmax-vmin)
 cmap_lasco = plt.get_cmap('soholasco2')
 rgb_lasco = matplotlib_to_rgb(cmap_lasco, 255)
 
+
+#------------------------------------------------------------------------------
+# generate original figure
+# for performance, express the data as a 4D array, called rgb
+# This includes the 3D data, expressed as a byte array (time,x,y),
+# and a 4th dimension for the rgb values for each pixel value 0 to 254
+# This allows you to use binary_string = True in the call to imshow, 
+# which greatly speeds up the rendering
+
 # buffer for storing
 rgb = np.zeros((images.shape[0],images.shape[1],images.shape[2],3),
                 dtype=np.uint8)
+
+gamma = 1.0
+data = (254*(norm*(images - vmin))**gamma).astype(np.uint8)
+for idx, val in np.ndenumerate(data):
+    rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[val,:]
+
+fig = px.imshow(rgb, animation_frame=0,
+            binary_string = False,
+            labels={"animation_frame":"frame"},
+            height=800,
+            zmin=0, zmax=255
+            )
+fig.update_traces({
+    "showscale": False,
+    "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+    },
+    selector = {'type':'heatmap'}
+)
+
+fig.update_layout(transition = {'duration': 0})
+fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
+fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
+
+fig.update_layout({
+    "xaxis": {
+        "scaleanchor":"y",
+        "showticklabels": False,
+        "visible": False,
+    },
+    "yaxis": {
+        "visible": False
+    },
+    "showlegend": False,
+    "height": 800,
+    "paper_bgcolor": "black",
+    "plot_bgcolor": "black",
+})
 
 #------------------------------------------------------------------------------
 
@@ -108,14 +153,15 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         }
     ),
 
-    # we'll store the plot data here from the server side
     dcc.Store(
-        id='figure-store',
+        id='data-store',
+        data=rgb
     ),
 
     # this is to display the plot
     dcc.Graph(
         id='figure-graph',
+        figure=fig
     ),
     html.Hr(),
     html.Details([
@@ -126,74 +172,35 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     ])])
 
 # recreate figure when gamma changes
-@app.callback(Output('figure-store', 'data'),
+@app.callback(Output('data-store', 'data'),
               Input('gamma-correction', 'value'))
 def update_figure_data(gamma):
     data = (254*(norm*(images - vmin))**gamma).astype(np.uint8)
     for idx, val in np.ndenumerate(data):
         rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[val,:]
 
-    fig = px.imshow(rgb, animation_frame=0,
-                binary_string = True,
-                labels={"animation_frame":"frame"},
-                height=800,
-                zmin=0, zmax=255
-                )
-    fig.update_traces({
-        "showscale": False,
-        "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-        },
-        selector = {'type':'heatmap'}
-    )
+    return data
 
-#    fig.data[0].showscale = False
-#    fig.data[0].showlegend = False
-
-#    fig.layout.template.data.heatmap[0].colorscale = cscale_lasco
-#    fig.layout.heatmapgl[0].colorscale = cscale_lasco
-#    fig.layout.coloraxis.colorscale = cscale_lasco
-
-    fig.update_layout(transition = {'duration': 0})
-    fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
-    fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
-
-    fig.update_layout({
-        "xaxis": {
-            "scaleanchor":"y",
-            "showticklabels": False,
-            "visible": False,
-        },
-        "yaxis": {
-            "visible": False
-        },
-        "showlegend": False,
-        "height": 800,
-        "paper_bgcolor": "black",
-        "plot_bgcolor": "black",
-    })
-
-    return fig
-
-# regenerate display when the figure store changes
+# regenerate figure when the data store changes
 app.clientside_callback(
-    """
-    function(figure) {
-        if(figure === undefined) {
-            return {'data': [], 'layout': {}};
-        }
-        const fig = Object.assign({}, figure, {});
-        return fig;
+    """function (data, figure) {
+        newFig = JSON.parse(JSON.stringify(figure))
+        newFig['frames'][0]['data'][0]['z'] = data[0]
+        newFig['frames'][1]['data'][0]['z'] = data[1]
+        newFig['frames'][2]['data'][0]['z'] = data[2]
+        newFig['frames'][3]['data'][0]['z'] = data[3]
+        newFig['frames'][4]['data'][0]['z'] = data[4]
+        newFig['frames'][5]['data'][0]['z'] = data[5]
+        newFig['frames'][6]['data'][0]['z'] = data[6]
+        newFig['frames'][7]['data'][0]['z'] = data[7]
+        newFig['frames'][8]['data'][0]['z'] = data[8]
+        return newFig
     }
     """,
     Output('figure-graph', 'figure'),
     Input('figure-store', 'data'),
+    State('figure-graph', 'figure')
 )
-#@app.callback(
-#    Output('figure-graph', 'figure'),
-#    Input('figure-store', 'data'),
-#)
-#def refresh_display(data):
-#    return data
 
 @app.callback(
     Output('figure-json', 'children'),

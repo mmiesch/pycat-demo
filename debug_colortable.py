@@ -73,20 +73,19 @@ cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
 
 data = images
 
-#fig = px.imshow(data, animation_frame=0,
-#            binary_string = True,
-#            labels={"animation_frame":"frame"},
-#            height=800,
-##            zmin=0, zmax=255
-#            )
-
-fig = px.imshow(images[0],
-            binary_string = True,
+fig = px.imshow(data, animation_frame=0,
+            binary_string = False,
+            labels={"animation_frame":"frame"},
             height=800,
             )
 
-fig.update_layout({
-    "coloraxis": {'colorscale': cscale_lasco},
+#fig = px.imshow(images[0],
+#            binary_string = True,
+#            height=800,
+#            )
+
+#fig.update_layout({
+#    "coloraxis": {'colorscale': cscale_lasco},
 #    "xaxis": {
 #        "scaleanchor":"y",
 #        "showticklabels": False,
@@ -99,7 +98,9 @@ fig.update_layout({
 #    "height": 800,
 #    "paper_bgcolor": "black",
 #    "plot_bgcolor": "black",
-})
+#})
+
+print(fig.frames[0].data[0].z)
 
 #------------------------------------------------------------------------------
 
