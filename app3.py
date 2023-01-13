@@ -44,9 +44,9 @@ images = np.array(imagelist)
 vmin = np.min(images)
 vmax = np.max(images)
 
-norm = 1.0/(vmax-vmin)
+norm = 255.0/(vmax-vmin)
 
-buffer = norm*(images - vmin)
+buffer = (norm*(images - vmin)).astype(np.uint8)
 
 buffersize = buffer.shape[0]
 
@@ -105,14 +105,14 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     # trigger data updates
     dcc.Interval(
         id='server-interval',
-        interval=1000,
+        interval=10000,
         n_intervals=0
     ),
 
     # trigger plot updates
     dcc.Interval(
         id='client-interval',
-        interval=200,
+        interval=1000,
         n_intervals=0
     ),
 
@@ -138,7 +138,7 @@ def reset_counter(n_intervals):
 @app.callback(Output('buffer', 'data'),
               Input('gamma-correction', 'value'))
 def change_gamma(gamma):
-    data = norm*(images - vmin)**gamma
+    data = (norm*(images - vmin)**gamma).astype(np.uint8)
     return data
 
 # and finally we use the buffer to update the plot at a higher frequency.
@@ -157,10 +157,7 @@ app.clientside_callback(
 )
 def update_figure(n_intervals, data, figure):
     i = random.randint(0, buffersize-1)
-    print(i)
     figure['data'][0]['z'] = data[i]
     return figure
-
-
 
 app.run()
