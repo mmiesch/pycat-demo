@@ -65,7 +65,6 @@ norm = 255.0/(vmax-vmin)
 # lasco/C2 color scale
 
 cmap_lasco = plt.get_cmap('soholasco2')
-
 cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
 
 #------------------------------------------------------------------------------
@@ -129,7 +128,7 @@ def update_figure_data(gamma):
                 binary_string = True,
                 labels={"animation_frame":"frame"},
                 height=800,
-#                zmin=0, zmax=255
+                zmin=0, zmax=255
                 )
 #    fig.update_traces({
 #        #"showscale": False,
@@ -144,6 +143,10 @@ def update_figure_data(gamma):
 #    fig.layout.template.data.heatmap[0].colorscale = cscale_lasco
 #    fig.layout.heatmapgl[0].colorscale = cscale_lasco
 #    fig.layout.coloraxis.colorscale = cscale_lasco
+
+    fig.update_layout(transition = {'duration': 0})
+    fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
+    fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
 
     fig.update_layout({
         "coloraxis": {'colorscale': cscale_lasco},
@@ -160,6 +163,11 @@ def update_figure_data(gamma):
         "paper_bgcolor": "black",
         "plot_bgcolor": "black",
     })
+
+    for f in fig.frames:
+        f.layout.coloraxis.colorscale = cscale_lasco
+#        f.data[0].showscale = False
+
     return fig
 
 # regenerate display when the figure store changes
@@ -176,6 +184,12 @@ app.clientside_callback(
     Output('figure-graph', 'figure'),
     Input('figure-store', 'data'),
 )
+#@app.callback(
+#    Output('figure-graph', 'figure'),
+#    Input('figure-store', 'data'),
+#)
+#def refresh_display(data):
+#    return data
 
 @app.callback(
     Output('figure-json', 'children'),
@@ -186,6 +200,5 @@ def generated_px_figure_json(data):
     return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"]["heatmap"][0], indent=2)+'\n```'
-
 
 app.run()

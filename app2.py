@@ -139,7 +139,6 @@ fig.update_layout({
 })
 
 fig.update_layout(transition = {'duration': 0})
-
 fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
 fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
 
