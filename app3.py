@@ -84,6 +84,7 @@ fig.update_traces({
 )
 
 fig.data[0].showscale = False
+fig.data[0].showlegend = False
 
 fig.update_layout({
     "coloraxis": {'colorscale': cscale_lasco},
@@ -129,14 +130,6 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                 max = 5.0,
                 value = 1.0
             ),
-            'Frame selection',
-            dcc.Slider(
-                id = "frame-selection",
-                min = 0,
-                max = buffersize-1,
-                step = 1,
-                value = 0
-            ),
         ],
         style={
             'textAlign': 'center',
@@ -146,39 +139,41 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 
     # we'll store the plot data here from the server side
     dcc.Store(
-        id='buffer',
-        data=buffer
+        id='figure-store',
     ),
 
-    # our plot
+    # this is to display the plot
     dcc.Graph(
-        id='example-graph',
-        figure=fig
+        id='figure-graph',
     )
 ])
 
-@app.callback(Output('buffer', 'data'),
+# recreate figure when gamma changes
+@app.callback(Output('figure-store', 'data'),
               Input('gamma-correction', 'value'))
-def change_gamma(gamma):
+def update_figure_data(gamma):
     data = (norm*(images - vmin)**gamma).astype(np.uint8)
-    return data
+    fig = px.imshow(data, animation_frame=0,
+                binary_string = True,
+                labels={"animation_frame":"frame"},
+                height=800
+                )
+    return fig
 
-# and finally we use the buffer to update the plot at a higher frequency.
-# this is what I'd like to turn into a clientside callback. it works for now, but
-# only up to a certain interval size.
+# regenerate display when the figure store changes
 app.clientside_callback(
-    """function (n_intervals, data, figure) {
-        newFig = JSON.parse(JSON.stringify(figure))
-        newFig['data'][0]['z'] = data[n_intervals]
-        return newFig
-    }""",
-    Output('example-graph', 'figure'),
-    Input('frame-selection', 'value'),
-    State('buffer', 'data'),
-    State('example-graph', 'figure')
+    """
+    function(figure) {
+        if(figure === undefined) {
+            return {'data': [], 'layout': {}};
+        }
+        const fig = Object.assign({}, figure, {});
+        return fig;
+    }
+    """,
+    Output('figure-graph', 'figure'),
+    Input('figure-store', 'data'),
 )
-def update_figure(frame, data, figure):
-    figure['data'][0]['z'] = data[frame]
-    return figure
+
 
 app.run()
