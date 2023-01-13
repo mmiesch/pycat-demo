@@ -7,6 +7,7 @@ import random
 from astropy.io import fits
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
+import json
 import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
@@ -110,8 +111,14 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     # this is to display the plot
     dcc.Graph(
         id='figure-graph',
-    )
-])
+    ),
+    html.Hr(),
+    html.Details([
+        html.Summary('Contents of figure storage'),
+        dcc.Markdown(
+            id='figure-json'
+        )
+    ])])
 
 # recreate figure when gamma changes
 @app.callback(Output('figure-store', 'data'),
@@ -164,6 +171,13 @@ app.clientside_callback(
     Output('figure-graph', 'figure'),
     Input('figure-store', 'data'),
 )
+
+@app.callback(
+    Output('figure-json', 'children'),
+    Input('figure-store', 'data')
+)
+def generated_px_figure_json(data):
+    return '```\n'+json.dumps(data, indent=2)+'\n```'
 
 
 app.run()
