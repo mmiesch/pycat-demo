@@ -146,13 +146,6 @@ def update_figure_data(gamma):
         selector = {'type':'heatmap'}
     )
 
-#    fig.data[0].showscale = False
-#    fig.data[0].showlegend = False
-
-#    fig.layout.template.data.heatmap[0].colorscale = cscale_lasco
-#    fig.layout.heatmapgl[0].colorscale = cscale_lasco
-#    fig.layout.coloraxis.colorscale = cscale_lasco
-
     fig.update_layout(transition = {'duration': 0})
     fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
     fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
@@ -167,10 +160,28 @@ def update_figure_data(gamma):
             "visible": False
         },
         "showlegend": False,
+        "font": {
+            "size":30,
+            "color":"goldenrod",
+            "family": "Arial Black"
+        },
         "height": 800,
         "paper_bgcolor": "black",
         "plot_bgcolor": "black",
     })
+
+    reverse_button = {
+        'args': [None, {'frame': {'duration': 0, 'redraw': True}, 'mode': 'immediate',
+                 'fromcurrent': True, 'direction': 'reverse',
+                 'transition': {'duration': 0, 'easing': 'linear'}}],
+        'label': '&#9664;',
+        'method': 'animate'
+    }
+    fig.layout.updatemenus[0].buttons = (
+        fig.layout.updatemenus[0].buttons[0],
+        reverse_button,
+        fig.layout.updatemenus[0].buttons[1],
+        )
 
     return fig
 
