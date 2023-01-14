@@ -108,7 +108,6 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         }
     ),
 
-    # we'll store the plot data here from the server side
     dcc.Store(
         id='figure-store',
     ),
@@ -139,12 +138,6 @@ def update_figure_data(gamma):
                 height=800,
                 zmin=0, zmax=255
                 )
-    fig.update_traces({
-        "showscale": False,
-        "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
-        },
-        selector = {'type':'heatmap'}
-    )
 
     fig.update_layout(transition = {'duration': 0})
     fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
@@ -199,12 +192,6 @@ app.clientside_callback(
     Output('figure-graph', 'figure'),
     Input('figure-store', 'data'),
 )
-#@app.callback(
-#    Output('figure-graph', 'figure'),
-#    Input('figure-store', 'data'),
-#)
-#def refresh_display(data):
-#    return data
 
 @app.callback(
     Output('figure-json', 'children'),
