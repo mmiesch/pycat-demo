@@ -74,7 +74,7 @@ cscale_lasco = matplotlib_to_plotly(cmap_lasco, 255)
 data = images
 
 fig = px.imshow(data, animation_frame=0,
-            binary_string = False,
+            binary_string = True,
             labels={"animation_frame":"frame"},
             height=800,
             )
@@ -100,7 +100,15 @@ fig = px.imshow(data, animation_frame=0,
 #    "plot_bgcolor": "black",
 #})
 
-print(fig.frames[0].data[0].z)
+print(80*'^')
+print(fig.data[0])
+#print(fig.data[0].source)
+print(80*'^')
+print(fig.frames[0].data[0])
+print(80*'^')
+print(80*'^')
+print(fig.frames[1].data[0])
+print(80*'^')
 
 #------------------------------------------------------------------------------
 
