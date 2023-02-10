@@ -10,10 +10,11 @@ bokeh serve --show app_mo_bokeh.py
 """
 from random import randint
 import numpy as np
+from datetime import datetime as dt
 from astropy.io import fits
 from bokeh.io import curdoc
 from bokeh.layouts import gridplot, column, layout
-from bokeh.models import ColumnDataSource, Slider, Button
+from bokeh.models import ColumnDataSource, Slider, Button, DatePicker
 from bokeh.models import LinearColorMapper, ColorBar
 from bokeh.themes import Theme
 from bokeh.plotting import figure
@@ -23,12 +24,22 @@ def load_cor():
     dir = "./CAT_images/2021122[12]/STEREO_A"
     import glob
 
-    files = sorted(glob.glob(f"{dir}/*.fts"))
-
+#    files = [
+        "STEREOA_L3_2012_09_16_113900.fts",
+        "STEREOA_L3_2012_09_16_115400.fts",
+        "STEREOA_L3_2012_09_16_122400.fts",
+        "STEREOA_L3_2012_09_16_123900.fts",
+        "STEREOA_L3_2012_09_16_125400.fts",
+        "STEREOA_L3_2012_09_16_132400.fts",
+        "STEREOA_L3_2012_09_16_133900.fts",
+        "STEREOA_L3_2012_09_16_135400.fts",
+        "STEREOA_L3_2012_09_16_142400.fts",
+        "STEREOA_L3_2012_09_16_143900.fts"
+    ]
     print(f"First files found :{files[0:2]}")
     imagelist = []
     for fname in files:
-        # fname = dir + '/' + f
+        fname = dir + '/' + f
         hdu = fits.open(fname)[0]
         imagelist.append(hdu.data)
 
@@ -62,7 +73,9 @@ plots = figure(plot_width=plot_size,
                plot_height=plot_size,
                x_range=(0, data_size),
                y_range=(0, data_size),
-               match_aspect=True)
+               match_aspect=True,
+               output_backend="webgl"
+               )
 
 plots.image('value',
             source=sources['COR3'],
@@ -80,7 +93,7 @@ plots.add_layout(color_bar, 'right')
 # slider = Slider(start=0, end=len(image_data), value=1, step=1, title="Image index")
 frame_slider = Slider(start=0, end=len(data), value=1, step=1, title="Image index")
 gamma_slider = Slider(start=0, end=5, value=1, step=.1, title="Gamma")
-
+date_picker = DatePicker(value=dt.utcnow().strftime('%Y-%m-%d'),min_date="2021-01-01", max_date="2024-01-13")
 
 def update_frame(attr, old, new):
     # sources['COR3'].data = {'value': image_data[slider.value]}
@@ -143,7 +156,7 @@ button = Button(label='► Play', width=60)
 button.on_event('button_click', animate)
 
 # Document
-curdoc().add_root(layout([plots],[frame_slider,gamma_slider],[button]))
+curdoc().add_root(layout([date_picker,button],column(plots, frame_slider,gamma_slider)))
 #curdoc().add_root(column(plots, frame_slider, gamma_slider, button))
 
 #curdoc().theme = 'dark_minimal'
