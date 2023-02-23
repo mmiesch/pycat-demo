@@ -198,8 +198,8 @@ app.clientside_callback(
     Input('figure-store', 'data')
 )
 def generated_px_figure_json(data):
-#    return '```\n'+json.dumps(data, indent=2)+'\n```'
-    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
+    return '```\n'+json.dumps(data, indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"]["heatmap"][0], indent=2)+'\n```'
 
