@@ -132,10 +132,12 @@ app.clientside_callback(
 
 @app.callback(
     Output('figure-contents', 'children'),
-    Input('scatterplot-figure-store', 'data')
+    Input('figure-store', 'data')
 )
 def generated_px_figure_json(data):
-    return '```\n'+json.dumps(data, indent=2)+'\n```'
+#    return '```\n'+json.dumps(data, indent=2)+'\n```'
+    return '```\n'+json.dumps(data["layout"]["coloraxis"], indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["name"], indent=2)+'\n```'
 
 
 if __name__ == '__main__':
