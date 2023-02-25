@@ -28,10 +28,10 @@ app.layout = html.Div([
     dcc.Dropdown(
         {'pop' : 'Population', 'lifeExp': 'Life Expectancy', 'gdpPercap': 'GDP per Capita'},
         'pop',
-        id='clientside-graph-indicator-px'
+        id='data-slider'
     ),
     'Country',
-    dcc.Dropdown(available_countries, 'Canada', id='clientside-graph-country-px'),
+    dcc.Dropdown(available_countries, 'Canada', id='country-slider'),
     'Graph scale',
     dcc.RadioItems(
         ['linear', 'log'],
@@ -50,8 +50,8 @@ app.layout = html.Div([
 
 @app.callback(
     Output('clientside-figure-store-px', 'data'),
-    Input('clientside-graph-indicator-px', 'value'),
-    Input('clientside-graph-country-px', 'value')
+    Input('data-slider', 'value'),
+    Input('country-slider', 'value')
 )
 def update_store_data(indicator, country):
     dff = df[df['country'] == country]
