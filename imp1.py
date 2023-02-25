@@ -19,10 +19,10 @@ available_countries = df['country'].unique()
 
 app.layout = html.Div([
     dcc.Graph(
-        id='clientside-graph-px'
+        id='graph'
     ),
     dcc.Store(
-        id='clientside-figure-store-px'
+        id='figure-store'
     ),
     'Indicator',
     dcc.Dropdown(
@@ -36,20 +36,20 @@ app.layout = html.Div([
     dcc.RadioItems(
         ['linear', 'log'],
         'linear',
-        id='clientside-graph-scale-px'
+        id='log-button'
     ),
     html.Hr(),
     html.Details([
         html.Summary('Contents of figure storage'),
         dcc.Markdown(
-            id='clientside-figure-json-px'
+            id='figure-contents'
         )
     ])
 ])
 
 
 @app.callback(
-    Output('clientside-figure-store-px', 'data'),
+    Output('figure-store', 'data'),
     Input('data-slider', 'value'),
     Input('country-slider', 'value')
 )
@@ -75,15 +75,15 @@ app.clientside_callback(
         return fig;
     }
     """,
-    Output('clientside-graph-px', 'figure'),
-    Input('clientside-figure-store-px', 'data'),
-    Input('clientside-graph-scale-px', 'value')
+    Output('graph', 'figure'),
+    Input('figure-store', 'data'),
+    Input('log-button', 'value')
 )
 
 
 @app.callback(
-    Output('clientside-figure-json-px', 'children'),
-    Input('clientside-figure-store-px', 'data')
+    Output('figure-contents', 'children'),
+    Input('figure-store', 'data')
 )
 def generated_px_figure_json(data):
     return '```\n'+json.dumps(data, indent=2)+'\n```'
