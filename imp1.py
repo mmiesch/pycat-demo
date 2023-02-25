@@ -49,6 +49,10 @@ image_data = (254*norm*(im - vmin)).astype(np.uint8)
 print(f"Image range {np.min(image_data)} {np.max(image_data)}")
 print(f"Image size {image_data.shape}")
 
+fig = px.imshow(image_data,
+                zmin=0,
+                zmax=255
+                )
 #------------------------------------------------------------------------------
 
 
@@ -74,11 +78,15 @@ app.layout = html.Div([
                 zmax=255
                 )
     ),
+    dcc.Store(
+        id='figure-store',
+        data=fig
+    ),
     html.Hr(),
     html.Details([
         html.Summary('Contents of figure storage'),
         dcc.Markdown(
-            id='scatterplot-figure-contents'
+            id='figure-contents'
         )
     ])
 ])
@@ -92,6 +100,12 @@ def update_store_data(country):
     dff = df[df['country'] == country]
     return px.scatter(dff, x='year', y='pop')
 
+@app.callback(
+    Output('graph', 'figure'),
+    Input('figure-store', 'data')
+)
+def update_figure(newfig):
+    return newfig
 
 app.clientside_callback(
     """
@@ -117,7 +131,7 @@ app.clientside_callback(
 
 
 @app.callback(
-    Output('scatterplot-figure-contents', 'children'),
+    Output('figure-contents', 'children'),
     Input('scatterplot-figure-store', 'data')
 )
 def generated_px_figure_json(data):
