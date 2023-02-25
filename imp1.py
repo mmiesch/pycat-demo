@@ -9,53 +9,58 @@ import json
 
 import plotly.express as px
 
+#------------------------------------------------------------------------------
+# create app object
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
+
+#------------------------------------------------------------------------------
+# scatterplot data
 
 df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv')
 
 available_countries = df['country'].unique()
 
+#------------------------------------------------------------------------------
+# image data
+
+#------------------------------------------------------------------------------
+
+
 app.layout = html.Div([
     dcc.Graph(
-        id='graph'
+        id='scatterplot-graph'
     ),
     dcc.Store(
-        id='figure-store'
-    ),
-    'Indicator',
-    dcc.Dropdown(
-        {'pop' : 'Population', 'lifeExp': 'Life Expectancy', 'gdpPercap': 'GDP per Capita'},
-        'pop',
-        id='data-slider'
+        id='scatterplot-figure-store'
     ),
     'Country',
-    dcc.Dropdown(available_countries, 'Canada', id='country-slider'),
+    dcc.Dropdown(available_countries, 'Canada', id='scatterplot-country-slider'),
     'Graph scale',
     dcc.RadioItems(
         ['linear', 'log'],
         'linear',
-        id='log-button'
+        id='scatterplot-log-button'
     ),
     html.Hr(),
     html.Details([
         html.Summary('Contents of figure storage'),
         dcc.Markdown(
-            id='figure-contents'
+            id='scatterplot-figure-contents'
         )
     ])
 ])
 
 
 @app.callback(
-    Output('figure-store', 'data'),
-    Input('data-slider', 'value'),
-    Input('country-slider', 'value')
+    Output('scatterplot-figure-store', 'data'),
+    Input('scatterplot-country-slider', 'value')
 )
-def update_store_data(indicator, country):
+def update_store_data(country):
     dff = df[df['country'] == country]
-    return px.scatter(dff, x='year', y=str(indicator))
+    return px.scatter(dff, x='year', y='pop')
 
 
 app.clientside_callback(
@@ -75,15 +80,15 @@ app.clientside_callback(
         return fig;
     }
     """,
-    Output('graph', 'figure'),
-    Input('figure-store', 'data'),
-    Input('log-button', 'value')
+    Output('scatterplot-graph', 'figure'),
+    Input('scatterplot-figure-store', 'data'),
+    Input('scatterplot-log-button', 'value')
 )
 
 
 @app.callback(
-    Output('figure-contents', 'children'),
-    Input('figure-store', 'data')
+    Output('scatterplot-figure-contents', 'children'),
+    Input('scatterplot-figure-store', 'data')
 )
 def generated_px_figure_json(data):
     return '```\n'+json.dumps(data, indent=2)+'\n```'
