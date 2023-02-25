@@ -3,7 +3,12 @@ This starts out as just an example where a clientside callback works.
 
 Then the intention is to modify it to do image processing on a single image.
 """
+
+from astropy.io import fits
 from dash import Dash, dcc, html, Input, Output
+from skimage.measure import block_reduce
+
+import numpy as np
 import pandas as pd
 import json
 
@@ -26,6 +31,24 @@ available_countries = df['country'].unique()
 #------------------------------------------------------------------------------
 # image data
 
+fname = "./data/STEREOA_L3_2012_09_16_125400.fts"
+
+hdu = fits.open(fname)[0]
+
+im = hdu.data
+
+# downsample to 512 x 512
+im = block_reduce(hdu.data, block_size = 2, func = np.nanmedian, cval = np.nanmin(im))
+
+vmin = np.min(im)
+vmax = np.max(im)
+norm = 1.0 / (vmax-vmin)
+
+image_data = (254*norm*(im - vmin)).astype(np.uint8)
+
+print(f"Image range {np.min(image_data)} {np.max(image_data)}")
+print(f"Image size {image_data.shape}")
+
 #------------------------------------------------------------------------------
 
 
@@ -43,6 +66,13 @@ app.layout = html.Div([
         ['linear', 'log'],
         'linear',
         id='scatterplot-log-button'
+    ),
+    dcc.Graph(
+        id='graph',
+        figure = px.imshow(image_data,
+                zmin=0,
+                zmax=255
+                )
     ),
     html.Hr(),
     html.Details([
