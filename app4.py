@@ -143,6 +143,8 @@ fig.layout.updatemenus[0].buttons = (
     fig.layout.updatemenus[0].buttons[1],
     )
 
+print(fig)
+
 #------------------------------------------------------------------------------
 
 colors = {
@@ -166,10 +168,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         children=[
             'Color Max',
             dcc.Slider(
-                id = "zmax-change",
+                id = "zmax-slider",
                 min = 1,
                 max = 255,
-                value = 1.0
+                value = 255
             ),
         ],
         style={
@@ -178,14 +180,15 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         }
     ),
 
-    dcc.Store(
-        id='figure-data',
-        data=rgb
-    ),
+#    dcc.Store(
+#        id='figure-data',
+#        data=rgb
+#    ),
 
     # this is to display the plot
     dcc.Graph(
         id='figure-graph',
+        figure=fig
     ),
     html.Hr(),
     html.Details([
@@ -195,34 +198,43 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         )
     ])])
 
-@app.callback(Output('figure-data', 'data'),
-              Input('gamma-correction', 'value'),
-              State('figure-data','data'))
-def update_figure_data(gamma,rgb):
-    cidx = (255 * (baseidx/255.0)**(1/gamma)).astype(np.uint8)
-    for idx, val in np.ndenumerate(basedata):
-        rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[cidx[val],:]
+#@app.callback(Output('figure-data', 'data'),
+#              Input('zmax-change', 'value'),
+#              State('figure-data','data'))
+#def update_figure_data(gamma,rgb):
+#    cidx = (255 * (baseidx/255.0)**(1/gamma)).astype(np.uint8)
+#    for idx, val in np.ndenumerate(basedata):
+#        rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[cidx[val],:]
+#
+#    return rgb
 
-    return rgb
+#@app.callback(Output('figure-graph', 'figure'),
+#              Input('zmax-slider', 'value'),
+#              State('figure-graph','figure'))
+#def update_figure(zmax, figure):
+#    figure.data.zmax = zmax
+#    return figure
 
-app.clientside_callback(
-    """function (data,figure) {
-        figure['frames'][0]['data'][0]['z'] = data[0]
-        return figure
-    }
-    """,
-    Output('figure-graph', 'figure'),
-    Input('figure-data', 'data'),
-    State('figure-graph', 'figure')
-)
+#app.clientside_callback(
+#    """function (zmax,figure) {
+#        newfig = JSON.parse(JSON.stringify(figure))
+#        newfig['data']['zmax'] = zmax
+#        return newfig
+#    }
+#    """,
+#    Output('figure-graph', 'figure'),
+#    Input('zmax-slider', 'value'),
+#    State('figure-graph', 'figure')
+#)
 
 @app.callback(
     Output('figure-json', 'children'),
-    Input('figure-store', 'data')
+    Input('figure-graph', 'figure')
 )
-def generated_px_figure_json(data):
+def generated_px_figure_json(figure):
+    return '```\n'+json.dumps(figure, indent=2)+'\n```'
 #    return '```\n'+json.dumps(data, indent=2)+'\n```'
-    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"]["heatmap"][0], indent=2)+'\n```'
 
