@@ -5,7 +5,7 @@ Then the intention is to modify it to do image processing on a single image.
 """
 
 from astropy.io import fits
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, State
 from skimage.measure import block_reduce
 
 import numpy as np
@@ -55,7 +55,6 @@ fig = px.imshow(image_data,
                 )
 #------------------------------------------------------------------------------
 
-
 app.layout = html.Div([
     dcc.Graph(
         id='scatterplot-graph'
@@ -72,15 +71,18 @@ app.layout = html.Div([
         id='scatterplot-log-button'
     ),
     dcc.Graph(
-        id='graph',
-        figure = px.imshow(image_data,
-                zmin=0,
-                zmax=255
-                )
+        id='graph'
     ),
     dcc.Store(
-        id='figure-store',
-        data=fig
+        id = 'figure-store',
+        data = fig
+    ),
+    'Color Saturation',
+    dcc.Slider(
+        id = "zmax-slider",
+        min = 1,
+        max = 255,
+        value = 255
     ),
     html.Hr(),
     html.Details([
@@ -99,13 +101,6 @@ app.layout = html.Div([
 def update_store_data(country):
     dff = df[df['country'] == country]
     return px.scatter(dff, x='year', y='pop')
-
-@app.callback(
-    Output('graph', 'figure'),
-    Input('figure-store', 'data')
-)
-def update_figure(newfig):
-    return newfig
 
 app.clientside_callback(
     """
@@ -129,14 +124,36 @@ app.clientside_callback(
     Input('scatterplot-log-button', 'value')
 )
 
+app.clientside_callback(
+    """
+    function(zmax, figure) {
+        if(figure === undefined) {
+            return {'data': [], 'layout': {}};
+        }
+        const fig = Object.assign({}, figure, {
+            'layout': {
+                ...figure.layout,
+                'coloraxis': {
+                    ...figure.layout.coloraxis, cmax: zmax
+                }
+            }
+        });
+        return fig;
+    }
+    """,
+    Output('graph', 'figure'),
+    Input('zmax-slider', 'value'),
+    State('figure-store', 'data')
+)
 
 @app.callback(
     Output('figure-contents', 'children'),
-    Input('figure-store', 'data')
+    Input('graph', 'figure')
 )
-def generated_px_figure_json(data):
+def print_figure_contents(data):
 #    return '```\n'+json.dumps(data, indent=2)+'\n```'
-    return '```\n'+json.dumps(data["layout"]["coloraxis"], indent=2)+'\n```'
+    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["layout"]["coloraxis"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["name"], indent=2)+'\n```'
 
 
