@@ -8,9 +8,11 @@ from astropy.io import fits
 from dash import Dash, dcc, html, Input, Output, State
 from skimage.measure import block_reduce
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import json
+import sunpy.visualization.colormaps as cm
 
 import plotly.express as px
 
@@ -49,10 +51,45 @@ image_data = (254*norm*(im - vmin)).astype(np.uint8)
 print(f"Image range {np.min(image_data)} {np.max(image_data)}")
 print(f"Image size {image_data.shape}")
 
+#------------------------------------------------------------------------------
+# color table
+
+def matplotlib_to_plotly(cmap, ncolors):
+    h = 1.0/(ncolors-1)
+    pl_colorscale = []
+
+    for k in range(ncolors):
+        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
+        pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
+
+    return pl_colorscale
+
+cmap_lasco = plt.get_cmap('soholasco2')
+cscale_lasco = matplotlib_to_plotly(cmap_lasco,255)
+
+#------------------------------------------------------------------------------
+# create figure
+
 fig = px.imshow(image_data,
                 zmin=0,
                 zmax=255
                 )
+fig.update_layout({
+    "coloraxis": {'colorscale': cscale_lasco},
+    "xaxis": {
+        "scaleanchor":"y",
+        "showticklabels": False,
+        "visible": False,
+    },
+    "yaxis": {
+        "visible": False
+    },
+    "showlegend": False,
+    "height": 800,
+    "paper_bgcolor": "black",
+    "plot_bgcolor": "black",
+})
+
 #------------------------------------------------------------------------------
 
 app.layout = html.Div([
