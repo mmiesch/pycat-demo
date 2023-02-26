@@ -94,11 +94,11 @@ app.layout = html.Div([
         data = fig
     ),
     'Color Saturation',
-    dcc.Slider(
-        id = "zmax-slider",
+    dcc.RangeSlider(
+        id = "range-slider",
         min = 1,
         max = 255,
-        value = 255
+        value = [1,255]
     ),
     html.Hr(),
     html.Details([
@@ -111,7 +111,7 @@ app.layout = html.Div([
 
 app.clientside_callback(
     """
-    function(zmax, figure) {
+    function(rng, figure) {
         if(figure === undefined) {
             return {'data': [], 'layout': {}};
         }
@@ -119,7 +119,7 @@ app.clientside_callback(
             'layout': {
                 ...figure.layout,
                 'coloraxis': {
-                    ...figure.layout.coloraxis, cmax: zmax
+                    ...figure.layout.coloraxis, cmin: rng[0], cmax: rng[1]
                 }
             }
         });
@@ -127,7 +127,7 @@ app.clientside_callback(
     }
     """,
     Output('graph', 'figure'),
-    Input('zmax-slider', 'value'),
+    Input('range-slider', 'value'),
     State('figure-store', 'data')
 )
 
