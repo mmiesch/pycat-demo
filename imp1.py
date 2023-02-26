@@ -134,6 +134,22 @@ def update_colorscale(gamma):
         newcs[i][1] = cscale_lasco[newidx[i]][1]
     return newcs
 
+# this doesn't work either
+#@app.callback(
+#    Output("figure-store", "data"),
+#    Input("gamma-slider","value"),
+#    State("figure-store","data")
+#)
+#def update_colorscale(gamma, figure):
+#    newidx = (255*np.power(idx,(1.0/gamma))).astype(np.uint8)
+#
+#    # first implementation - see if it works - could likely be faster
+#    newcs = cscale_lasco
+#    for i in np.arange(len(newcs)):
+#        newcs[i][1] = cscale_lasco[newidx[i]][1]
+#
+#    return figure.update_layout({"coloraxis": {'colorscale': cscale_lasco}})
+
 app.clientside_callback(
     """
     function(rng, figure) {
@@ -144,7 +160,8 @@ app.clientside_callback(
             'layout': {
                 ...figure.layout,
                 'coloraxis': {
-                    ...figure.layout.coloraxis, cmin: rng[0], cmax: rng[1]
+                    ...figure.layout.coloraxis,
+                    cmin: rng[0], cmax: rng[1]
                 }
             }
         });
@@ -155,6 +172,32 @@ app.clientside_callback(
     Input('range-slider', 'value'),
     State('figure-store', 'data')
 )
+
+# A try at gamma correction - not working
+#app.clientside_callback(
+#    """
+#    function(rng, cscale, figure) {
+#        cs = JSON.parse(JSON.stringify(cscale))
+#        if(figure === undefined) {
+#            return {'data': [], 'layout': {}};
+#        }
+#        const fig = Object.assign({}, figure, {
+#            'layout': {
+#                ...figure.layout,
+#                'coloraxis': {
+#                    ...figure.layout.coloraxis,
+#                    cmin: rng[0], cmax: rng[1],
+#                    colorscale: cs
+#                }
+#            }
+#        });
+#        return fig;
+#    }
+#    """,
+#    Output('graph', 'figure'),
+#    [Input('range-slider', 'value'), Input('colorscale','data')],
+#    State('figure-store', 'data')
+#)
 
 @app.callback(
     Output('figure-contents', 'children'),
