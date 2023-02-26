@@ -57,7 +57,9 @@ def matplotlib_to_plotly(cmap, ncolors):
     return pl_colorscale
 
 cmap_lasco = plt.get_cmap('soholasco2')
-cscale_lasco = matplotlib_to_plotly(cmap_lasco,255)
+cscale_lasco = matplotlib_to_plotly(cmap_lasco,256)
+
+idx = np.arange(256,dtype='float')/255
 
 #------------------------------------------------------------------------------
 # create figure
@@ -93,6 +95,9 @@ app.layout = html.Div([
         id = 'figure-store',
         data = fig
     ),
+    dcc.Store(
+        id = 'colorscale'
+    ),
     'Color Saturation',
     dcc.RangeSlider(
         id = "range-slider",
@@ -115,6 +120,19 @@ app.layout = html.Div([
         )
     ])
 ])
+
+@app.callback(
+    Output("colorscale", "data"),
+    Input("gamma-slider","value")
+)
+def update_colorscale(gamma):
+    newidx = (255*np.power(idx,(1.0/gamma))).astype(np.uint8)
+
+    # first implementation - see if it works - could likely be faster
+    newcs = cscale_lasco
+    for i in np.arange(len(newcs)):
+        newcs[i][1] = cscale_lasco[newidx[i]][1]
+    return newcs
 
 app.clientside_callback(
     """
