@@ -100,6 +100,13 @@ app.layout = html.Div([
         max = 255,
         value = [1,255]
     ),
+    'Gamma',
+    dcc.Slider(
+        id = "gamma-slider",
+        min = 0.01,
+        max = 5.0,
+        value = 1.0
+    ),
     html.Hr(),
     html.Details([
         html.Summary('Contents of figure storage'),
