@@ -231,11 +231,8 @@ app.clientside_callback(
     State('color-range','data')
 )
 def make_movie(nclicks,cscale,rng):
-    print(f"RANGE: {rng}")
 
     rgbmap = plotly_to_rgb(cscale)
-    for r in rgbmap:
-        print(r)
 
     for idx, val in np.ndenumerate(images):
         rgbimages[idx[0],idx[1],idx[2],:] = rgbmap[val,:]
@@ -243,8 +240,49 @@ def make_movie(nclicks,cscale,rng):
     fig = px.imshow(rgbimages, animation_frame=0,
                 binary_string = True,
                 labels={"animation_frame":"frame"},
-                height=600
+                height=600,
+                zmin = rng[0],
+                zmax = rng[1]
                 )
+
+    fig.update_traces({
+        "showscale": False,
+        "hovertemplate": 'x: %{x}<br>y: %{y}<br>value: %{z}<extra></extra>',
+        },
+        selector = {'type':'heatmap'}
+    )
+
+    fig.update_layout(transition = {'duration': 0})
+    fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 0
+    fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 0
+
+    fig.update_layout({
+        "xaxis": {
+            "scaleanchor":"y",
+            "showticklabels": False,
+            "visible": False,
+        },
+        "yaxis": {
+            "visible": False
+        },
+        "showlegend": False,
+        "height": 800,
+        "paper_bgcolor": "black",
+        "plot_bgcolor": "black",
+    })
+
+    reverse_button = {
+        'args': [None, {'frame': {'duration': 0, 'redraw': True}, 'mode': 'immediate',
+                 'fromcurrent': True, 'direction': 'reverse',
+                 'transition': {'duration': 0, 'easing': 'linear'}}],
+        'label': '&#9664;',
+        'method': 'animate'
+    }
+    fig.layout.updatemenus[0].buttons = (
+        fig.layout.updatemenus[0].buttons[0],
+        reverse_button,
+        fig.layout.updatemenus[0].buttons[1],
+        )
 
     return fig
 
