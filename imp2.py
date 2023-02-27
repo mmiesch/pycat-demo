@@ -39,20 +39,29 @@ files = [
     "STEREOA_L3_2012_09_16_143900.fts"
 ]
 
-imagelist = []
+fullres = []
 for f in files:
     fname = dir + '/' + f
     hdu = fits.open(fname)[0]
-    imagelist.append(hdu.data)
+    fullres.append(hdu.data)
+fullres = np.array(fullres)
 
-images = np.array(imagelist)
+print(f"fullres {fullres.shape}")
+
+# downsample to 512 x 512
+images = []
+cval = np.nanmin(fullres)
+for n in np.arange(fullres.shape[0]):
+    im = block_reduce(fullres[n,:,:],
+            block_size = 2,
+            func = np.nanmedian,
+            cval = cval)
+    images.append(im)
+images = np.array(images)
 
 # reference image
 ref_frame = 4
-im = images[:,:,ref_frame]
-
-# downsample to 512 x 512
-im = block_reduce(hdu.data, block_size = 2, func = np.nanmedian, cval = np.nanmin(im))
+im = images[ref_frame,:,:]
 
 vmin = np.min(im)
 vmax = np.max(im)
@@ -62,6 +71,10 @@ image_data = (254*norm*(im - vmin)).astype(np.uint8)
 
 print(f"Image range {np.min(image_data)} {np.max(image_data)}")
 print(f"Image size {image_data.shape}")
+
+# buffer for movie data
+rgb = np.zeros((images.shape[0],images.shape[1],images.shape[2],3),
+                dtype=np.uint8)
 
 #------------------------------------------------------------------------------
 # color table
