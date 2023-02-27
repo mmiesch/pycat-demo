@@ -59,7 +59,7 @@ def matplotlib_to_plotly(cmap, ncolors):
 cmap_lasco = plt.get_cmap('soholasco2')
 cscale_lasco = matplotlib_to_plotly(cmap_lasco,256)
 
-idx = np.arange(256,dtype='float')/255
+nidx = np.arange(256,dtype='float')/255
 
 #------------------------------------------------------------------------------
 # create figure
@@ -126,7 +126,7 @@ app.layout = html.Div([
     Input("gamma-slider","value")
 )
 def update_colorscale(gamma):
-    newidx = (255*np.power(idx,(1.0/gamma))).astype(np.uint8)
+    newidx = (255*np.power(nidx,(1.0/gamma))).astype(np.uint8)
 
     # first implementation - see if it works - could likely be faster
     newcs = cscale_lasco
@@ -134,21 +134,22 @@ def update_colorscale(gamma):
         newcs[i][1] = cscale_lasco[newidx[i]][1]
     return newcs
 
-# this doesn't work either
-#@app.callback(
-#    Output("figure-store", "data"),
-#    Input("gamma-slider","value"),
-#    State("figure-store","data")
-#)
-#def update_colorscale(gamma, figure):
-#    newidx = (255*np.power(idx,(1.0/gamma))).astype(np.uint8)
-#
-#    # first implementation - see if it works - could likely be faster
-#    newcs = cscale_lasco
-#    for i in np.arange(len(newcs)):
-#        newcs[i][1] = cscale_lasco[newidx[i]][1]
-#
-#    return figure.update_layout({"coloraxis": {'colorscale': cscale_lasco}})
+@app.callback(
+    Output("figure-store", "data"),
+    Input("gamma-slider","value"),
+    State("figure-store","data")
+)
+def update_colorscale(gamma, figure):
+    newidx = (255*np.power(idx,(1.0/gamma))).astype(np.uint8)
+
+    # first implementation - see if it works - could likely be faster
+    newcs = cscale_lasco
+    for i in np.arange(len(newcs)):
+        newcs[i][1] = cscale_lasco[newidx[i]][1]
+
+    figure["layout"]["coloraxis"]["colorscale"] = newcs
+
+    return figure
 
 app.clientside_callback(
     """
@@ -170,7 +171,7 @@ app.clientside_callback(
     """,
     Output('graph', 'figure'),
     Input('range-slider', 'value'),
-    State('figure-store', 'data')
+    Input('figure-store', 'data')
 )
 
 # A try at gamma correction - not working
