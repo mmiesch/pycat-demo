@@ -138,6 +138,12 @@ app.layout = html.Div([
         max = 4.0,
         value = 1.0
     ),
+    html.Button("Animation",
+        id = "animate-button"
+    ),
+    dcc.Graph(
+        id = "movie-graph"
+    ),
     html.Hr(),
     html.Details([
         html.Summary('Contents of figure storage'),
@@ -197,31 +203,21 @@ app.clientside_callback(
     Input('figure-store', 'data')
 )
 
-# A try at gamma correction - not working
-#app.clientside_callback(
-#    """
-#    function(rng, cscale, figure) {
-#        cs = JSON.parse(JSON.stringify(cscale))
-#        if(figure === undefined) {
-#            return {'data': [], 'layout': {}};
-#        }
-#        const fig = Object.assign({}, figure, {
-#            'layout': {
-#                ...figure.layout,
-#                'coloraxis': {
-#                    ...figure.layout.coloraxis,
-#                    cmin: rng[0], cmax: rng[1],
-#                    colorscale: cs
-#                }
-#            }
-#        });
-#        return fig;
-#    }
-#    """,
-#    Output('graph', 'figure'),
-#    [Input('range-slider', 'value'), Input('colorscale','data')],
-#    State('figure-store', 'data')
-#)
+@app.callback(
+    Output('movie-graph','figure'),
+    Input('animate-button','n_clicks'),
+    State('colorscale','data'),
+    State('color-range','data')
+)
+def make_movie(nclicks,cscale,rng):
+    print(f"RANGE: {rng}")
+
+    fig = px.imshow(images, animation_frame=0,
+                labels={"animation_frame":"frame"},
+                height=600
+                )
+
+    return fig
 
 @app.callback(
     Output('figure-contents', 'children'),
