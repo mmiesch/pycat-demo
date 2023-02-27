@@ -26,6 +26,16 @@ def matplotlib_to_rgb(cmap, ncolors):
 
     return rgbmap
 
+def matplotlib_to_plotly(cmap, ncolors):
+    h = 1.0/(ncolors-1)
+    pl_colorscale = []
+
+    for k in range(ncolors):
+        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
+        pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
+
+    return pl_colorscale
+
 #------------------------------------------------------------------------------
 app = Dash(__name__)
 
@@ -62,32 +72,34 @@ vmax = np.max(images)
 
 norm = 1.0/(vmax-vmin)
 
+# used to reset the color scale
+baseidx = np.arange(256)
+
 #------------------------------------------------------------------------------
 # lasco/C2 color scale
 
 cmap_lasco = plt.get_cmap('soholasco2')
 rgb_lasco = matplotlib_to_rgb(cmap_lasco, 255)
-
+cscale_lasco = matplotlib_to_plotly(cmap_lasco,255)
 
 #------------------------------------------------------------------------------
 # generate original figure
 # for performance, express the data as a 4D array, called rgb
 # This includes the 3D data, expressed as a byte array (time,x,y),
 # and a 4th dimension for the rgb values for each pixel value 0 to 254
-# This allows you to use binary_string = True in the call to imshow, 
+# This allows you to use binary_string = True in the call to imshow,
 # which greatly speeds up the rendering
 
 # buffer for storing
 rgb = np.zeros((images.shape[0],images.shape[1],images.shape[2],3),
                 dtype=np.uint8)
 
-gamma = 1.0
-data = (254*(norm*(images - vmin))**gamma).astype(np.uint8)
-for idx, val in np.ndenumerate(data):
+basedata = (254*norm*(images - vmin)).astype(np.uint8)
+for idx, val in np.ndenumerate(basedata):
     rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[val,:]
 
 fig = px.imshow(rgb, animation_frame=0,
-            binary_string = False,
+            binary_string = True,
             labels={"animation_frame":"frame"},
             height=800,
             zmin=0, zmax=255
@@ -118,6 +130,21 @@ fig.update_layout({
     "plot_bgcolor": "black",
 })
 
+reverse_button = {
+    'args': [None, {'frame': {'duration': 0, 'redraw': True}, 'mode': 'immediate',
+             'fromcurrent': True, 'direction': 'reverse',
+             'transition': {'duration': 0, 'easing': 'linear'}}],
+    'label': '&#9664;',
+    'method': 'animate'
+}
+fig.layout.updatemenus[0].buttons = (
+    fig.layout.updatemenus[0].buttons[0],
+    reverse_button,
+    fig.layout.updatemenus[0].buttons[1],
+    )
+
+print(fig)
+
 #------------------------------------------------------------------------------
 
 colors = {
@@ -139,12 +166,12 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     html.Div(
         id='div-test',
         children=[
-            'Gamma Correction',
+            'Color Max',
             dcc.Slider(
-                id = "gamma-correction",
-                min = 0.0,
-                max = 5.0,
-                value = 1.0
+                id = "zmax-slider",
+                min = 1,
+                max = 255,
+                value = 255
             ),
         ],
         style={
@@ -153,10 +180,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         }
     ),
 
-    dcc.Store(
-        id='data-store',
-        data=rgb
-    ),
+#    dcc.Store(
+#        id='figure-data',
+#        data=rgb
+#    ),
 
     # this is to display the plot
     dcc.Graph(
@@ -171,44 +198,43 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         )
     ])])
 
-# recreate figure when gamma changes
-@app.callback(Output('data-store', 'data'),
-              Input('gamma-correction', 'value'))
-def update_figure_data(gamma):
-    data = (254*(norm*(images - vmin))**gamma).astype(np.uint8)
-    for idx, val in np.ndenumerate(data):
-        rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[val,:]
+#@app.callback(Output('figure-data', 'data'),
+#              Input('zmax-change', 'value'),
+#              State('figure-data','data'))
+#def update_figure_data(gamma,rgb):
+#    cidx = (255 * (baseidx/255.0)**(1/gamma)).astype(np.uint8)
+#    for idx, val in np.ndenumerate(basedata):
+#        rgb[idx[0],idx[1],idx[2],:] = rgb_lasco[cidx[val],:]
+#
+#    return rgb
 
-    return data
+#@app.callback(Output('figure-graph', 'figure'),
+#              Input('zmax-slider', 'value'),
+#              State('figure-graph','figure'))
+#def update_figure(zmax, figure):
+#    figure.data.zmax = zmax
+#    return figure
 
-# regenerate figure when the data store changes
-app.clientside_callback(
-    """function (data, figure) {
-        newFig = JSON.parse(JSON.stringify(figure))
-        newFig['frames'][0]['data'][0]['z'] = data[0]
-        newFig['frames'][1]['data'][0]['z'] = data[1]
-        newFig['frames'][2]['data'][0]['z'] = data[2]
-        newFig['frames'][3]['data'][0]['z'] = data[3]
-        newFig['frames'][4]['data'][0]['z'] = data[4]
-        newFig['frames'][5]['data'][0]['z'] = data[5]
-        newFig['frames'][6]['data'][0]['z'] = data[6]
-        newFig['frames'][7]['data'][0]['z'] = data[7]
-        newFig['frames'][8]['data'][0]['z'] = data[8]
-        return newFig
-    }
-    """,
-    Output('figure-graph', 'figure'),
-    Input('figure-store', 'data'),
-    State('figure-graph', 'figure')
-)
+#app.clientside_callback(
+#    """function (zmax,figure) {
+#        newfig = JSON.parse(JSON.stringify(figure))
+#        newfig['data']['zmax'] = zmax
+#        return newfig
+#    }
+#    """,
+#    Output('figure-graph', 'figure'),
+#    Input('zmax-slider', 'value'),
+#    State('figure-graph', 'figure')
+#)
 
 @app.callback(
     Output('figure-json', 'children'),
-    Input('figure-store', 'data')
+    Input('figure-graph', 'figure')
 )
-def generated_px_figure_json(data):
+def generated_px_figure_json(figure):
+    return '```\n'+json.dumps(figure, indent=2)+'\n```'
 #    return '```\n'+json.dumps(data, indent=2)+'\n```'
-    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
+#    return '```\n'+json.dumps(data["layout"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"], indent=2)+'\n```'
 #    return '```\n'+json.dumps(data["layout"]["template"]["data"]["heatmap"][0], indent=2)+'\n```'
 
