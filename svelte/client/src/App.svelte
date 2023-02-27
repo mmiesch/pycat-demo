@@ -1,10 +1,33 @@
 <script>
 	export let name;
+
+	let rand = -1;
+    let message = '';
+	let src = '';
+
+	function getRand() {
+		fetch("./rand")
+		    .then(d => d.text())
+		    .then(d => (rand = d));
+	}
+
+	async function getName() {
+		let thisMessage = message;
+		let res = await fetch(`./message?name=${message}`);
+		let message_recieved = await res.text();
+		if (res.ok && thisMessage == message) {
+			src = message_recieved;
+		}
+	}
 </script>
 
 <main>
 	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<h1>Your Number is {rand}!</h1>
+	<button on:click={getRand}>Get a random number</button>
+    <h1>Received Message: {src}</h1>
+	<input type="text" placeholder="enter your name" bind:value={message} />
+	<button on:click={getName}>Send Message</button>
 </main>
 
 <style>
