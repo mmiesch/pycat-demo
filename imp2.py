@@ -5,7 +5,9 @@ Then the intention is to modify it to do image processing on a single image.
 """
 
 from astropy.io import fits
-from dash import Dash, dcc, html, Input, Output, State
+#from dash import Dash, dcc, html, Input, Output, State
+from dash import dcc
+from dash_extensions.enrich import Output, DashProxy, Input, State, MultiplexerTransform, html
 from skimage.measure import block_reduce
 
 import matplotlib.pyplot as plt
@@ -20,7 +22,7 @@ import plotly.express as px
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = DashProxy(__name__, external_stylesheets=external_stylesheets,transforms=[MultiplexerTransform()])
 
 #------------------------------------------------------------------------------
 # image data
@@ -165,9 +167,6 @@ app.layout = html.Div([
                  "backgroundColor":"goldenrod",
                  "height":60},
     ),
-    dcc.Graph(
-        id = "movie-graph"
-    ),
     html.Hr(),
     html.Details([
         html.Summary('Contents of figure storage'),
@@ -228,7 +227,7 @@ app.clientside_callback(
 )
 
 @app.callback(
-    Output('movie-graph','figure'),
+    Output('graph','figure'),
     Input('animate-button','n_clicks'),
     State('colorscale','data'),
     State('color-range','data')
