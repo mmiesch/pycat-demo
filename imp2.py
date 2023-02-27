@@ -120,6 +120,10 @@ app.layout = html.Div([
         id = 'colorscale',
         data = cscale_buffer
     ),
+    dcc.Store(
+        id = "color-range",
+        data = (0,255)
+    ),
     'Color Saturation',
     dcc.RangeSlider(
         id = "range-slider",
@@ -155,6 +159,13 @@ def update_colorscale(gamma, newcs):
     return newcs
 
 @app.callback(
+    Output("color-range","data"),
+    Input("range-slider","value")
+)
+def update_color_range(rng):
+    return (rng[0],rng[1])
+
+@app.callback(
     Output("figure-store", "data"),
     Input("colorscale","data"),
     State("figure-store","data")
@@ -182,7 +193,7 @@ app.clientside_callback(
     }
     """,
     Output('graph', 'figure'),
-    Input('range-slider', 'value'),
+    Input('color-range', 'data'),
     Input('figure-store', 'data')
 )
 
