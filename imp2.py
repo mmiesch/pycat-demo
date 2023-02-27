@@ -160,7 +160,10 @@ app.layout = html.Div([
         value = 1.0
     ),
     html.Button("Animation",
-        id = "animate-button"
+        id = "animate-button",
+        style = {"color":"DarkBlue",
+                 "backgroundColor":"goldenrod",
+                 "height":60},
     ),
     dcc.Graph(
         id = "movie-graph"
@@ -172,7 +175,7 @@ app.layout = html.Div([
             id='figure-contents'
         )
     ])
-])
+], style={"font-size":30})
 
 @app.callback(
     Output("colorscale", "data"),
@@ -266,7 +269,6 @@ def make_movie(nclicks,cscale,rng):
             "visible": False
         },
         "showlegend": False,
-        "height": 800,
         "paper_bgcolor": "black",
         "plot_bgcolor": "black",
     })
