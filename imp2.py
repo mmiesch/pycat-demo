@@ -48,7 +48,12 @@ fullres = np.array(fullres)
 
 print(f"fullres {fullres.shape}")
 
+vmin = np.min(fullres)
+vmax = np.max(fullres)
+norm = 1.0 / (vmax-vmin)
+
 # downsample to 512 x 512
+# and render as uint8
 images = []
 cval = np.nanmin(fullres)
 for n in np.arange(fullres.shape[0]):
@@ -56,24 +61,19 @@ for n in np.arange(fullres.shape[0]):
             block_size = 2,
             func = np.nanmedian,
             cval = cval)
-    images.append(im)
+    image_data = (254*norm*(im - vmin)).astype(np.uint8)
+    images.append(image_data)
 images = np.array(images)
 
 # reference image
 ref_frame = 4
-im = images[ref_frame,:,:]
-
-vmin = np.min(im)
-vmax = np.max(im)
-norm = 1.0 / (vmax-vmin)
-
-image_data = (254*norm*(im - vmin)).astype(np.uint8)
+image_data = images[ref_frame,:,:]
 
 print(f"Image range {np.min(image_data)} {np.max(image_data)}")
 print(f"Image size {image_data.shape}")
 
 # buffer for movie data
-rgb = np.zeros((images.shape[0],images.shape[1],images.shape[2],3),
+rgbimages = np.zeros((images.shape[0],images.shape[1],images.shape[2],3),
                 dtype=np.uint8)
 
 #------------------------------------------------------------------------------
@@ -88,6 +88,14 @@ def matplotlib_to_plotly(cmap, ncolors):
         pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
 
     return pl_colorscale
+
+def plotly_to_rgb(cscale):
+    ncolors = len(cscale)
+    rgbmap = np.zeros((ncolors,3), dtype=np.uint8)
+    for k in range(ncolors):
+        s = cscale[k][1]
+        rgbmap[k,:] = np.uint8(s[s.find('(')+1:s.find(')')].split(','))
+    return rgbmap
 
 cmap_lasco = plt.get_cmap('soholasco2')
 cscale_lasco = matplotlib_to_plotly(cmap_lasco,256)
@@ -225,7 +233,15 @@ app.clientside_callback(
 def make_movie(nclicks,cscale,rng):
     print(f"RANGE: {rng}")
 
-    fig = px.imshow(images, animation_frame=0,
+    rgbmap = plotly_to_rgb(cscale)
+    for r in rgbmap:
+        print(r)
+
+    for idx, val in np.ndenumerate(images):
+        rgbimages[idx[0],idx[1],idx[2],:] = rgbmap[val,:]
+
+    fig = px.imshow(rgbimages, animation_frame=0,
+                binary_string = True,
                 labels={"animation_frame":"frame"},
                 height=600
                 )
