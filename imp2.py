@@ -143,33 +143,24 @@ app.layout = html.Div([
     ])
 ])
 
-#@app.callback(
-#    Output("colorscale", "data"),
-#    Input("gamma-slider","value")
-#)
-#def update_colorscale(gamma):
-#    newidx = (255*np.power(nidx,(1.0/gamma))).astype(np.uint8)
-#
-#    # first implementation - see if it works - could likely be faster
-#    newcs = cscale_lasco
-#    for i in np.arange(len(newcs)):
-#        newcs[i][1] = cscale_lasco[newidx[i]][1]
-#    return newcs
+@app.callback(
+    Output("colorscale", "data"),
+    Input("gamma-slider","value"),
+    State("colorscale","data")
+)
+def update_colorscale(gamma, newcs):
+    newidx = (255*np.power(nidx,(1.0/gamma))).astype(np.uint8)
+    for i in np.arange(len(newcs)):
+        newcs[i][1] = cscale_lasco[newidx[i]][1]
+    return newcs
 
 @app.callback(
     Output("figure-store", "data"),
-    Input("gamma-slider","value"),
-    State("figure-store","data"),
-    State("colorscale","data")
+    Input("colorscale","data"),
+    State("figure-store","data")
 )
-def update_colorscale(gamma, figure, newcs):
-    newidx = (255*np.power(nidx,(1.0/gamma))).astype(np.uint8)
-
-    for i in np.arange(len(newcs)):
-        newcs[i][1] = cscale_lasco[newidx[i]][1]
-
+def update_colorscale(newcs, figure):
     figure["layout"]["coloraxis"]["colorscale"] = newcs
-
     return figure
 
 app.clientside_callback(
