@@ -133,7 +133,11 @@ fig.update_layout({
 
 app.layout = html.Div([
     dcc.Graph(
-        id='graph'
+        id='graph',
+        config = {'modeBarButtonsToAdd':[
+            'drawclosedpath',
+            'eraseshape'
+        ]}
     ),
     dcc.Store(
         id = 'figure-store',
