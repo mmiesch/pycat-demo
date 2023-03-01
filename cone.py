@@ -5,7 +5,10 @@ import matplotlib.pyplot as plt
 
 
 #-----------------------------------
-def cone(x,a):
+def cone(a, ys):
+
+    xmax = a * np.sqrt(2.0)
+    x = np.linspace(0.0,xmax,num=N)
 
     alpha = x*x
     gamma = a*a
@@ -15,29 +18,26 @@ def cone(x,a):
 
     beta = (- b + np.sqrt(b*b - 4.0*c))/2.0
 
-    return np.sqrt(beta)
+    y = ys * np.sqrt(beta)
+
+    return x, y
 
 #-----------------------------------
 
 N = 100
 
-a1 = 1.0
-a2 = 2.0
-
-xmax = a1 * np.sqrt(2.0)
-x1 = np.linspace(0.0,xmax,num=N)
-
-xmax = a2 * np.sqrt(2.0)
-x2 = np.linspace(0.0,xmax,num=N)
-
-y1 = cone(x1,1.0)
-y2 = cone(x2,2.0)
+x1, y1 = cone(1.0, 1.0)
+x2, y2 = cone(2.0, 1.0)
+x3, y3 = cone(2.0, 0.3)
 
 plt.plot(x1,y1,color='b')
 plt.plot(x1,-y1,color='b')
 
 plt.plot(x2,y2,color='r')
 plt.plot(x2,-y2,color='r')
+
+plt.plot(x3,y3,color='black')
+plt.plot(x3,-y3,color='black')
 
 plt.show()
 
