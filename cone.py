@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 
 
 #-----------------------------------
-def cone(a, ys):
+def cone(a, rs):
 
-    xmax = a * np.sqrt(2.0)
-    x = np.linspace(0.0,xmax,num=N)
+    zmax = a * np.sqrt(2.0)
+    z = np.linspace(0.0,zmax,num=N)
 
-    alpha = x*x
+    alpha = z*z
     gamma = a*a
 
     b = 2.0*(alpha + gamma)
@@ -18,27 +18,30 @@ def cone(a, ys):
 
     beta = (- b + np.sqrt(b*b - 4.0*c))/2.0
 
-    y = ys * np.sqrt(beta)
+    r = rs * np.sqrt(beta)
 
-    return x, y
+    return z, r
 
 #-----------------------------------
 
-N = 100
+N = 500
 
-x1, y1 = cone(1.0, 1.0)
-x2, y2 = cone(2.0, 1.0)
-x3, y3 = cone(2.0, 0.3)
+z1, r1 = cone(1.0, 1.0)
+z2, r2 = cone(2.0, 1.0)
+z3, r3 = cone(2.0, 0.3)
 
-plt.plot(x1,y1,color='b')
-plt.plot(x1,-y1,color='b')
+fig = plt.figure(figsize=[4,12])
 
-plt.plot(x2,y2,color='r')
-plt.plot(x2,-y2,color='r')
+plt.fill(r1,z1,color='b', alpha = 0.3)
+plt.fill(r2,z2,color='r', alpha = 0.3)
+plt.fill(r3,z3,color='black', alpha = 0.3)
 
-plt.plot(x3,y3,color='black')
-plt.plot(x3,-y3,color='black')
+reflect = True
+
+if reflect:
+    plt.fill(-r1,z1,color='b', alpha = 0.3)
+    plt.fill(-r2,z2,color='r', alpha = 0.3)
+    plt.fill(-r3,z3,color='black', alpha = 0.3)
 
 plt.show()
-
 
