@@ -22,10 +22,10 @@ from bokeh.plotting import figure
 
 def load_cor():
     dir = "./CAT_images/2021122[12]/STEREO_A"
-    import glob
-
-#    files = [
-        "STEREOA_L3_2012_09_16_113900.fts",
+    # import glob
+    # files=sorted(glob.glob(f"{dir}/*"))
+    files = [
+       "STEREOA_L3_2012_09_16_113900.fts",
         "STEREOA_L3_2012_09_16_115400.fts",
         "STEREOA_L3_2012_09_16_122400.fts",
         "STEREOA_L3_2012_09_16_123900.fts",
@@ -38,7 +38,7 @@ def load_cor():
     ]
     print(f"First files found :{files[0:2]}")
     imagelist = []
-    for fname in files:
+    for f in files:
         fname = dir + '/' + f
         hdu = fits.open(fname)[0]
         imagelist.append(hdu.data)
