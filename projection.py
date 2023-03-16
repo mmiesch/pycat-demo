@@ -24,7 +24,7 @@ r = np.sqrt(beta)
 rnorm = r / max(r)
 
 # compute number of radial points for each z
-Nrz = (rnorm*Nr).astype(np.int) + 1
+Nrz = (rnorm*Nr).astype(np.int32) + 1
 
 # allocate aarays for points on surface
 Npoints = np.sum(Nrz)
@@ -40,7 +40,29 @@ for j in np.arange(Nz):
     x0[i1:i2] = r[j] * np.sin(phi)
     y0[i1:i2] = r[j] * np.cos(phi)
     z0[i1:i2] = z[j]
-    print(80*'-'+f"\n{x0[i1:i2]} {y0[i1:i2]} {z0[i1:i2]}")
+#    print(80*'-'+f"\n{x0[i1:i2]} {y0[i1:i2]} {z0[i1:i2]}")
     i1 = i2
 
 #-----------------------------------
+# Now rotate cone by specified colatitude and longitude
+
+# these are the input values
+colatitude = 30.0
+longitude = 0.0
+
+theta = np.radians(colatitude)
+phi = np.radians(longitude)
+
+# We only really need yprime and zprime
+# no need to compute xprime
+
+st = np.sin(theta)
+ct = np.cos(theta)
+sp = np.sin(phi)
+cp = np.cos(phi)
+
+yprime = ct*sp*x0 + cp*y0 + st*sp*z0
+zprime = -st*x0 + ct*z0
+
+#-----------------------------------
+
