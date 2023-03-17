@@ -1,13 +1,14 @@
 # platform to play with plotting the cone model
 
 import numpy as np
+import pandas as pd
 import plotly.express as px
 
 #-----------------------------------
 # create base cone
 
-Nz = 20
-Nr = 20
+Nz = 40
+Nr = 40
 
 twopi = 2.0 * np.pi
 
@@ -65,4 +66,17 @@ yprime = ct*sp*x0 + cp*y0 + st*sp*z0
 zprime = -st*x0 + ct*z0
 
 #-----------------------------------
+# compute ymin, ymax for each z
 
+df = pd.DataFrame({'z':np.around(zprime,2),'y':yprime})
+df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
+
+print(df.to_string())
+
+print(df['min'])
+
+#-----------------------------------
+
+#fig = px.line(df, x='y',y='z')
+
+#fig.show()
