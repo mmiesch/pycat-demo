@@ -73,7 +73,7 @@ df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
 
 print(df.to_string())
 
-print(df['min'])
+#print(df['min'])
 
 #-----------------------------------
 
