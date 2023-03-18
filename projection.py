@@ -2,13 +2,13 @@
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
 
 #-----------------------------------
 # create base cone
 
-Nz = 40
-Nr = 40
+Nz = 200
+Nr = 100
 
 twopi = 2.0 * np.pi
 
@@ -48,8 +48,8 @@ for j in np.arange(Nz):
 # Now rotate cone by specified colatitude and longitude
 
 # these are the input values
-colatitude = 30.0
-longitude = 0.0
+colatitude = 90.0
+longitude = 90.0
 
 theta = np.radians(colatitude)
 phi = np.radians(longitude)
@@ -70,13 +70,19 @@ zprime = -st*x0 + ct*z0
 
 df = pd.DataFrame({'z':np.around(zprime,2),'y':yprime})
 df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
+df.columns = df.columns.droplevel(0)
+df.columns = ['z','ymin','ymax']
 
-print(df.to_string())
+#print(df.to_string())
 
-#print(df['min'])
+print(df)
 
 #-----------------------------------
 
-#fig = px.line(df, x='y',y='z')
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=df['ymin'],y=df['z'],
+    mode='lines', line = {'color':'blue'}))
+fig.add_trace(go.Scatter(x=df['ymax'],y=df['z'],
+    mode='lines', line = {'color':'blue'}))
 
-#fig.show()
+fig.show()
