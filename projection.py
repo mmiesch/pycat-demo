@@ -7,8 +7,8 @@ import plotly.graph_objects as go
 #-----------------------------------
 # create base cone
 
-Nz = 200
-Nr = 100
+Nz = 400
+Nr = 400
 
 twopi = 2.0 * np.pi
 
@@ -48,8 +48,8 @@ for j in np.arange(Nz):
 # Now rotate cone by specified colatitude and longitude
 
 # these are the input values
-colatitude = 90.0
-longitude = 90.0
+colatitude = 50.0
+longitude = 50.0
 
 theta = np.radians(colatitude)
 phi = np.radians(longitude)
