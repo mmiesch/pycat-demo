@@ -66,23 +66,37 @@ yprime = ct*sp*x0 + cp*y0 + st*sp*z0
 zprime = -st*x0 + ct*z0
 
 #-----------------------------------
-# compute ymin, ymax for each z
+# two plot options: set to 1 for line plot or 2 for contour plot
+ptype = 2
 
-df = pd.DataFrame({'z':np.around(zprime,2),'y':yprime})
-df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
-df.columns = df.columns.droplevel(0)
-df.columns = ['z','ymin','ymax']
 
-#print(df.to_string())
+if ptype == 1:
 
-print(df)
+    #-----------------------------------
+    # compute ymin, ymax for each z
 
-#-----------------------------------
+    df = pd.DataFrame({'z':np.around(zprime,2),'y':yprime})
+    df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
+    df.columns = df.columns.droplevel(0)
+    df.columns = ['z','ymin','ymax']
 
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=df['ymin'],y=df['z'],
-    mode='lines', line = {'color':'blue'}))
-fig.add_trace(go.Scatter(x=df['ymax'],y=df['z'],
-    mode='lines', line = {'color':'blue'}))
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df['ymin'],y=df['z'],
+        mode='lines', line = {'color':'blue'}))
+    fig.add_trace(go.Scatter(x=df['ymax'],y=df['z'],
+        mode='lines', line = {'color':'blue'}))
+else:
+
+    fig = go.Figure(go.Histogram2dContour(
+            x=yprime, y=zprime,
+            line = dict(
+                smoothing=1,
+                width=10
+            ),
+            contours = dict(
+                start=0.5,
+                end=0.5,
+                coloring = "lines"
+            )))
 
 fig.show()
