@@ -44,13 +44,26 @@ for j in np.arange(Nz):
     i1 = i2
 
 #-----------------------------------
+# set cone parameters
+
+latitude = 45.0
+longitude = 90.0
+psi = 20.0
+a = 2.0
+
+#-----------------------------------
+# scale with height and cone angle
+
+rs = np.tan(np.radians(psi))
+
+x0 = rs * a * x0
+y0 = rs * a * y0
+z0 = a * z0
+
+#-----------------------------------
 # Now rotate cone by specified colatitude and longitude
 
-# these are the input values
-colatitude = 45.0
-longitude = 90.0
-
-theta = np.radians(colatitude)
+theta = np.radians(90.0 - latitude)
 phi = np.radians(longitude)
 
 # We only really need yprime and zprime
@@ -62,7 +75,7 @@ sp = np.sin(phi)
 cp = np.cos(phi)
 
 yprime = ct*sp*x0 + cp*y0 + st*sp*z0
-zprime = -st*x0 + ct*z0
+zprime = ct*z0 - st*x0
 
 #-----------------------------------
 # two plot options: set to 1 for line plot or 2 for contour plot
