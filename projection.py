@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 # create base cone
 
 Nz = 400
-Nr = 400
+Nr = 200
 
 twopi = 2.0 * np.pi
 
@@ -48,8 +48,8 @@ for j in np.arange(Nz):
 # Now rotate cone by specified colatitude and longitude
 
 # these are the input values
-colatitude = 50.0
-longitude = 50.0
+colatitude = 90.0
+longitude = 90.0
 
 theta = np.radians(colatitude)
 phi = np.radians(longitude)
@@ -67,7 +67,7 @@ zprime = -st*x0 + ct*z0
 
 #-----------------------------------
 # two plot options: set to 1 for line plot or 2 for contour plot
-ptype = 2
+ptype = 1
 
 
 if ptype == 1:
@@ -75,7 +75,15 @@ if ptype == 1:
     #-----------------------------------
     # compute ymin, ymax for each z
 
-    df = pd.DataFrame({'z':np.around(zprime,2),'y':yprime})
+    dz = .04
+    hdz = 0.5 * dz
+    zmin = np.min(zprime)
+    zmax = np.max(zprime) + hdz
+    bins = np.arange(zmin,zmax,dz)
+    idx = np.digitize(zprime, bins)
+    zbin = bins[idx-1] + hdz
+
+    df = pd.DataFrame({'z':zbin,'y':yprime})
     df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
     df.columns = df.columns.droplevel(0)
     df.columns = ['z','ymin','ymax']
