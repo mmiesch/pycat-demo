@@ -12,12 +12,11 @@ Nr = 200
 
 twopi = 2.0 * np.pi
 
-D0 = np.sqrt(2.0)
-z = np.linspace(0.0,D0,num=Nz)
+z = np.linspace(0.0,1.0,num=Nz)
 
 alpha = z*z
-b = 2.0*(alpha + 1.0)
-c = alpha*(alpha - 2.0)
+b = 2.0*alpha + 1.0
+c = alpha*(alpha - 1.0)
 
 beta = (- b + np.sqrt(b*b - 4.0*c))/2.0
 
@@ -55,10 +54,11 @@ a = 2.0
 # scale with height and cone angle
 
 rs = np.tan(np.radians(psi))
+d = np.sqrt(2.0) * a
 
-x0 = rs * a * x0
-y0 = rs * a * y0
-z0 = a * z0
+x0 = rs * d * x0
+y0 = rs * d * y0
+z0 = d * z0
 
 #-----------------------------------
 # Now rotate cone by specified colatitude and longitude
@@ -95,7 +95,6 @@ if ptype == 1:
     yzmin = yprime[imin][0]
     yzmax = yprime[imax][0]
 
-    print(f"zmin, zmax {zmin/D0} {zmax/D0}")
     bins = np.arange(zmin,zmax-dz,dz)
     idx = np.digitize(zprime, bins)
     zbin = bins[idx-1] + hdz
