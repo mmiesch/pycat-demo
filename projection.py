@@ -48,8 +48,8 @@ for j in np.arange(Nz):
 # Now rotate cone by specified colatitude and longitude
 
 # these are the input values
-colatitude = 90.0
-longitude = 90.0
+colatitude = 50.0
+longitude = 50.0
 
 theta = np.radians(colatitude)
 phi = np.radians(longitude)
@@ -69,7 +69,6 @@ zprime = -st*x0 + ct*z0
 # two plot options: set to 1 for line plot or 2 for contour plot
 ptype = 1
 
-
 if ptype == 1:
 
     #-----------------------------------
@@ -78,15 +77,36 @@ if ptype == 1:
     dz = .04
     hdz = 0.5 * dz
     zmin = np.min(zprime)
-    zmax = np.max(zprime) + hdz
+    zmax = np.max(zprime)
+    imin = np.where(zprime == zmin)
+    imax = np.where(zprime == zmax)
+    yzmin = yprime[imin][0]
+    yzmax = yprime[imax][0]
+
+    print(f"zmin, zmax {zmin/D0} {zmax/D0}")
     bins = np.arange(zmin,zmax,dz)
     idx = np.digitize(zprime, bins)
     zbin = bins[idx-1] + hdz
 
-    df = pd.DataFrame({'z':zbin,'y':yprime})
+    # make sure first and last points are part of the array
+    zz = np.concatenate([[zmin],zbin,[zmax]])
+    yy = np.concatenate([[yzmin],yprime,[yzmax]])
+
+    N=len(yy)
+    for i in np.arange(0,10):
+        print(f"{zz[i]} {yy[i]}")
+    for i in np.arange(N-10,N):
+        print(f"{zz[i]} {yy[i]}")
+
+
+
+    df = pd.DataFrame({'z':zz,'y':yy})
     df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
     df.columns = df.columns.droplevel(0)
     df.columns = ['z','ymin','ymax']
+
+    # drop rows where z is bigger than zmax
+    df = df[df.z <= zmax]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df['ymin'],y=df['z'],
