@@ -36,6 +36,8 @@ plt.fill(r1,z1,color='b', alpha = 0.3)
 plt.fill(r2,z2,color='r', alpha = 0.3)
 plt.fill(r3,z3,color='black', alpha = 0.3)
 
+plt.plot(z1,z1)
+
 reflect = True
 
 if reflect:

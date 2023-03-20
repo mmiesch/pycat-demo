@@ -41,15 +41,14 @@ for j in np.arange(Nz):
     x0[i1:i2] = r[j] * np.sin(phi)
     y0[i1:i2] = r[j] * np.cos(phi)
     z0[i1:i2] = z[j]
-#    print(80*'-'+f"\n{x0[i1:i2]} {y0[i1:i2]} {z0[i1:i2]}")
     i1 = i2
 
 #-----------------------------------
 # Now rotate cone by specified colatitude and longitude
 
 # these are the input values
-colatitude = 50.0
-longitude = 50.0
+colatitude = 45.0
+longitude = 90.0
 
 theta = np.radians(colatitude)
 phi = np.radians(longitude)
@@ -74,7 +73,7 @@ if ptype == 1:
     #-----------------------------------
     # compute ymin, ymax for each z
 
-    dz = .04
+    dz = .02
     hdz = 0.5 * dz
     zmin = np.min(zprime)
     zmax = np.max(zprime)
@@ -84,7 +83,7 @@ if ptype == 1:
     yzmax = yprime[imax][0]
 
     print(f"zmin, zmax {zmin/D0} {zmax/D0}")
-    bins = np.arange(zmin,zmax,dz)
+    bins = np.arange(zmin,zmax-dz,dz)
     idx = np.digitize(zprime, bins)
     zbin = bins[idx-1] + hdz
 
@@ -98,15 +97,10 @@ if ptype == 1:
     for i in np.arange(N-10,N):
         print(f"{zz[i]} {yy[i]}")
 
-
-
     df = pd.DataFrame({'z':zz,'y':yy})
     df = df.groupby(by='z',as_index=False,sort=True).agg({'y':['min','max']})
     df.columns = df.columns.droplevel(0)
     df.columns = ['z','ymin','ymax']
-
-    # drop rows where z is bigger than zmax
-    df = df[df.z <= zmax]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df['ymin'],y=df['z'],
