@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 
-from scipy.spatial import ConvexHull, convex_hull_plot_2d
+from scipy.spatial import ConvexHull
 
 #-----------------------------------
 # create base cone
@@ -139,7 +139,6 @@ elif ptype == 2:
     fig.show()
 else:
 
-    print('convex hull')
     points = np.zeros((Npoints,2))
     points[:,0] = zprime
     points[:,1] = yprime
