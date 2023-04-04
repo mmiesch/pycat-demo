@@ -3,6 +3,9 @@
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+
+from scipy.spatial import ConvexHull, convex_hull_plot_2d
 
 #-----------------------------------
 # create base cone
@@ -79,7 +82,7 @@ zprime = ct*z0 - st*x0
 
 #-----------------------------------
 # two plot options: set to 1 for line plot or 2 for contour plot
-ptype = 1
+ptype = 3
 
 if ptype == 1:
 
@@ -119,7 +122,8 @@ if ptype == 1:
         mode='lines', line = {'color':'blue'}))
     fig.add_trace(go.Scatter(x=df['ymax'],y=df['z'],
         mode='lines', line = {'color':'blue'}))
-else:
+    fig.show()
+elif ptype == 2:
 
     fig = go.Figure(go.Histogram2dContour(
             x=yprime, y=zprime,
@@ -132,5 +136,17 @@ else:
                 end=0.5,
                 coloring = "lines"
             )))
+    fig.show()
+else:
 
-fig.show()
+    print('convex hull')
+    points = np.zeros((Npoints,2))
+    points[:,0] = zprime
+    points[:,1] = yprime
+
+    hull = ConvexHull(points)
+
+    for simplex in hull.simplices:
+        plt.plot(points[simplex,0], points[simplex,1])
+    plt.show()
+
