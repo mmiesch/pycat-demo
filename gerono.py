@@ -42,16 +42,9 @@ def cone(radial_distance, angular_width, style=0):
 z1, r1 = cone(1.0, 40.0, style = 0)
 z2, r2 = cone(1.0, 40.0, style = 1)
 
-fig = plt.figure(figsize=[4,12])
+fig = plt.figure(figsize=[12,4])
 
-plt.fill(r1,z1,color='b', alpha = 0.3)
-plt.fill(r2,z2,color='r', alpha = 0.3)
-
-reflect = True
-
-if reflect:
-    plt.fill(-r1,z1,color='b', alpha = 0.3)
-    plt.fill(-r2,z2,color='r', alpha = 0.3)
+plt.fill_between(z1,-r1,y2=r1,color='b', alpha = 0.3)
+plt.fill_between(z2,-r2,y2=r2,color='r', alpha = 0.3)
 
 plt.show()
-
