@@ -63,6 +63,14 @@ tree = cKDTree(points_surface)
 distances, _ = tree.query(grid_points)
 scalar_field = distances.reshape(Xg.shape)
 
+lighting_settings = dict(
+    ambient=0.2,    # less ambient for more contrast
+    diffuse=0.9,    # strong diffuse for clear shape
+    specular=0.6,   # high specular for shiny highlights
+    roughness=0.3,  # lower roughness for sharper highlights
+    fresnel=0.5     # increase fresnel for edge highlights
+)
+
 # Plot the isosurface at a small value (close to the surface)
 fig = go.Figure(data=go.Isosurface(
     x=Xg.flatten(),
@@ -73,7 +81,18 @@ fig = go.Figure(data=go.Isosurface(
     isomax=0.05,
     surface_count=1,
     caps=dict(x_show=False, y_show=False, z_show=False),
-    colorscale='Viridis',
-    opacity=0.6
+    colorscale='Blackbody',
+    opacity=1.0,
+    lighting=lighting_settings,
+    showscale=False
 ))
+
+fig.update_layout(
+    scene = dict(
+       zaxis = dict(visible=False),
+       yaxis = dict(visible=False),
+       xaxis = dict(visible=False),
+    )
+)
+
 fig.show()
